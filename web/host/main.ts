@@ -85,7 +85,8 @@ socket.on('room:state', (s: RoomState) => {
   syncGame(s);
 });
 socket.on('msg', (m: { from?: string; type: string; data: unknown }) => {
-  if (m.from) current?.game.onPhoneMessage(m.from, m.type, m.data);
+  // Messages from the server part have no `from`: hand them over as "server".
+  current?.game.onPhoneMessage(m.from ?? 'server', m.type, m.data);
 });
 
 async function create() {
