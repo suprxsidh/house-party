@@ -10,7 +10,9 @@
     "start": "HP_MODE=prod tsx server/main.ts",
     "test": "node scripts/test.mjs",
     "test:prod": "npm run build && HP_MODE=prod npm test",
-    "bots": "tsx bots/run-browser.ts"
+    "bots": "tsx bots/run-browser.ts",
+    "smoke": "tsx bots/smoke-remote.ts",
+    "tunnel": "bash scripts/tunnel.sh"
   },
   "dependencies": {
     "express": "^5.1.0",
