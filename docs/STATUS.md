@@ -8,3 +8,5 @@
 - Running next: Task 2 kart (builder in worktree-wt/kart), then Task 3 camera.
 - Fixed merge dup (leaderId). Build clean, 57/57 tests on main. Known flake: 'one socket joining twice' test fails sometimes when other test runs share the CPU.
 - Task 2 kart: PASS (reviewer), merged. 66/67 on main: tilt browser test fails while another heavy Chrome run shares the CPU (marble state stalls, software GL); recheck when idle. Task 3 camera: builder running in house-party-wt/camera.
+- PAUSED 2026-10-07 by user. Task 3 camera builder stopped mid-build. Its WIP is committed on branch task-camera (worktree ../house-party-wt/camera), NOT reviewed, NOT merged. Tests there not yet confirmed passing.
+- RESUME: 1) in the camera worktree run the Task 3 tests (games/kart/test/kart.camera.test.ts, kart.packcam.test.ts), finish what is missing vs spec Kart race section (pack camera, catch-up, reposition with cp/lapIndex, minimap). 2) Opus reviewer. 3) merge to main, re-run all bot tests with the machine idle (tilt browser test is CPU-sensitive). 4) final 10-bot soak against https://house-party-2pdd.onrender.com. 5) PARTY_CHECKLIST real-phone test. Party is 2026-10-09.
