@@ -294,7 +294,9 @@ registerPhone(info, (): PhoneGame => {
     onMessage(type, data) {
       const d = data as Record<string, unknown> | null;
       if (!d || typeof d !== 'object') return;
+      const fin = (v: unknown) => typeof v === 'number' && Number.isFinite(v);
       if (type === MSG.role) {
+        if ((d.role !== 'assassin' && d.role !== 'civilian') || !fin(d.round) || !fin(d.rounds) || !fin(d.cooldownMs) || !fin(d.arrestsLeft) || !fin(d.points) || typeof d.out !== 'boolean') return;
         role = d as unknown as RoleMsg;
         roleAt = Date.now();
         cdTotal = Math.max(role.cooldownMs, 1);
@@ -303,6 +305,7 @@ registerPhone(info, (): PhoneGame => {
         renderStatic();
         tick();
       } else if (type === MSG.round) {
+        if (!fin(d.round) || !fin(d.rounds) || !fin(d.startsAt) || !fin(d.now) || typeof d.over !== 'boolean') return;
         round = d as unknown as RoundMsg;
         roundAt = Date.now();
         drinksOn = !!round.drinks;
@@ -310,7 +313,7 @@ registerPhone(info, (): PhoneGame => {
         renderStatic();
       } else if (type === MSG.me) {
         const m = d as unknown as MeMsg;
-        if (typeof m.x !== 'number' || typeof m.z !== 'number') return;
+        if (!fin(m.x) || !fin(m.z)) return;
         const h = PLAZA_SIZE / 2;
         const px = (Math.max(-h, Math.min(h, m.x)) + h) / PLAZA_SIZE;
         const pz = (Math.max(-h, Math.min(h, m.z)) + h) / PLAZA_SIZE;
