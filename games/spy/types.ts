@@ -70,8 +70,7 @@ export interface ResultMsg {
   actorName: string;
   targetName: string; // empty string for a bot
   out: string[];
-  aliveCivilians: number;
-  aliveAssassins: number; // the TV may show this only if the spec allows; the server sends it at round end only (0 mid-round)
+  alive: number; // human players still in (no role split: roles stay secret)
   seq: number; // increasing per round, TV drops duplicates
 }
 
