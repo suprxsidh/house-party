@@ -2,3 +2,4 @@
 import './stub/phone/index.ts';
 import './tenyen/phone/index.ts';
 import './market/phone/index.ts';
+import './tilt/phone/index.ts';
