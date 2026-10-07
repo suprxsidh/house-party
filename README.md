@@ -9,4 +9,4 @@ A web party platform. A TV laptop shows a QR code. Friends scan it and their pho
 
 ## Credits
 
-The kart game in `kart/` is a copy of [kart-royale](https://github.com/ryancampbell/kart-royale) by Ryan Campbell, under the MIT license (`LICENSE-kart-royale`). We changed its `index.html` (relative script path, no Vercel analytics) and keep the rest as is. Later tasks add an adapter folder for remote phone control.
+The kart game in `kart/` is a copy of [kart-royale](https://github.com/ryancampbell/kart-royale) by Ryan Campbell, under the MIT license (`LICENSE-kart-royale`). We changed its `index.html` (relative script path, no Vercel analytics) and keep the rest as is. Phone control lives in `kart/src/party/` (adapter) and `games/kart/` (TV, phone, server parts). Edits to the kart code: 10 karts, ghost karts (no kart-vs-kart collision), a remote-driver check in `Race.update`, and a `?party=1` hook in `main.ts`.

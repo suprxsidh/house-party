@@ -20,7 +20,7 @@
  */
 import * as THREE from 'three';
 import type { Ctx } from '../types';
-import { Surface } from '../types';
+import { RACER_COUNT, Surface } from '../types';
 import type { Track } from './Track';
 import {
   BOOST_PADS, BRIDGE_T0, BRIDGE_T1, FASCIA_OFF, GRID_BOX_HL, GRID_BOX_HW,
@@ -2042,7 +2042,7 @@ function buildMarkings(track: Track, lib: MatLib, root: THREE.Group) {
   //  itself about the lateral offset (5.0 painted, `min(5.4, half*0.46)` driven),
   //  which the width cut would have turned from a near-miss into karts standing
   //  a metre and a half off their own boxes.
-  for (let k = 0; k < 8; k++) {
+  for (let k = 0; k < RACER_COUNT; k++) {
     const slot = gridSlot(k);
     const dC = -slot.back;
     const lat = slot.lat;

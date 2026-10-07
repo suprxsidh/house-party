@@ -1706,9 +1706,9 @@ export interface Livery {
   decalMat: THREE.MeshPhysicalMaterial;
 }
 
-const NUMBERS = [5, 11, 27, 3, 44, 8, 17, 62];
-const SPONSORS = ['AZZURA', 'KOMOTO', 'SUNBOLT', 'MARINA 9', 'VELOCE', 'PIRO CO', 'DELTAWING', 'ORBITA'];
-const SKINS = [0xf0c39a, 0x8d5a3b, 0xe7b183, 0xc98b5e, 0xf3d0b0, 0x6f4429, 0xd79c72, 0xa86f47];
+const NUMBERS = [5, 11, 27, 3, 44, 8, 17, 62, 33, 71];
+const SPONSORS = ['AZZURA', 'KOMOTO', 'SUNBOLT', 'MARINA 9', 'VELOCE', 'PIRO CO', 'DELTAWING', 'ORBITA', 'NIMBUS', 'FJORD'];
+const SKINS = [0xf0c39a, 0x8d5a3b, 0xe7b183, 0xc98b5e, 0xf3d0b0, 0x6f4429, 0xd79c72, 0xa86f47, 0xe2b48a, 0x8a5a40];
 
 const _hsl = { h: 0, s: 0, l: 0 };
 
@@ -1716,7 +1716,7 @@ function derive(index: number, base: THREE.Color) {
   base.getHSL(_hsl);
   // Trim rotates the hue by a scheme-specific amount and lands lighter or
   // darker than the coat so the two never merge at distance.
-  const rot = [0.5, 0.08, -0.1, 0.5, 0.13, -0.45, 0.28, 0.55][index % 8];
+  const rot = [0.5, 0.08, -0.1, 0.5, 0.13, -0.45, 0.28, 0.55, -0.3, 0.22][index % 10];
   const trim = new THREE.Color().setHSL(
     (_hsl.h + rot + 1) % 1,
     THREE.MathUtils.clamp(_hsl.s * 0.85 + 0.1, 0.25, 0.95),
@@ -2000,7 +2000,7 @@ export function getLivery(stats: KartStats): Livery {
   const hit = _liveries.get(key);
   if (hit) return hit;
 
-  const index = _nextIndex++ % 8;
+  const index = _nextIndex++ % 10;
   const base = stats.color.clone();
   const d = derive(index, base);
   const partial = {
