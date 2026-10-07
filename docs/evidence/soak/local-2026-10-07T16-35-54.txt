@@ -1,0 +1,17 @@
+soak local  2026-10-07T16:36:11.384Z  total 16.4 s
+game        result  time      note
+tenyen      PASS    0.2 s     3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+tilt        PASS    12.0 s    falls 6, total points 50, results on TV+phones, TV clean
+spy         PASS    4.0 s     3 rounds, roles only in spy:end, r1 assassins-caught, r2 assassins-caught, r3 assassins-caught, 6 results
+SOAK OK
+
+--- log ---
+[16:35:54.953] local prod-like server on http://localhost:57603
+[16:35:54.975] room NDSB created
+[16:35:55.026] 10 bots joined, leader p1
+[16:35:55.026] --- tenyen ---
+[16:35:55.213] PASS tenyen: 3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+[16:35:55.240] --- tilt ---
+[16:36:07.262] PASS tilt: falls 6, total points 50, results on TV+phones, TV clean
+[16:36:07.290] --- spy ---
+[16:36:11.336] PASS spy: 3 rounds, roles only in spy:end, r1 assassins-caught, r2 assassins-caught, r3 assassins-caught, 6 results

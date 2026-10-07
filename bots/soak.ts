@@ -1,5 +1,5 @@
 // Soak test. Socket-level only (no browser).
-// Usage: npm run soak -- [url] [--games tenyen,tilt,pictionary,market,kart]
+// Usage: npm run soak -- [url] [--games tenyen,tilt,pictionary,market,kart,spy]
 // No url: starts a local prod-like server on a random port. With a url: targets that server.
 // One room, one FakeTv, 10 Bots. The leader (bot 0) picks each game, a scripted run asserts, then the game ends.
 import assert from 'node:assert/strict';
@@ -12,7 +12,7 @@ import type { RunningServer } from '../server/index.ts';
 
 const argv = process.argv.slice(2);
 let url = '';
-let gamesArg = 'tenyen,tilt,pictionary,market,kart';
+let gamesArg = 'tenyen,tilt,pictionary,market,kart,spy';
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === '--games') gamesArg = argv[++i] ?? gamesArg;
   else if (argv[i].startsWith('--games=')) gamesArg = argv[i].slice(8);
@@ -268,12 +268,60 @@ async function kart(c: Ctx) {
   return 'STUB: picked, room game = kart (no gameplay asserts yet)';
 }
 
+// ---------- Spy in the Crowd ----------
+// FakeTv plays the TV: it sends spy:act for the civilians so every round ends by arresting both assassins.
+async function spy(c: Ctx) {
+  const { tv, bots } = c;
+  const role = (i: number, n: number) => bots[i].layerMsgs.filter((m) => m.type === 'spy:role' && (m.data as any).round === n).at(-1)?.data as any;
+  const notes: string[] = [];
+  for (let n = 1; n <= 3; n++) {
+    const base = tv.layerMsgs.length; // this round's messages start here
+    const mine = () => tv.layerMsgs.slice(base);
+    await until(() => tv.layerMsgs.some((m) => m.type === 'spy:round' && (m.data as any).round === n) && bots.every((_, i) => !!role(i, n)), 30000, `round ${n} and every role`);
+    const rm = tv.layerMsgs.find((m) => m.type === 'spy:round' && (m.data as any).round === n)!.data as any;
+    assert.equal(rm.playerIds.length, N);
+    assert.equal(rm.botCount, 30);
+    const roles = bots.map((_, i) => role(i, n).role as string);
+    const ass = roles.flatMap((r, i) => (r === 'assassin' ? [i] : []));
+    const civ = roles.flatMap((r, i) => (r === 'civilian' ? [i] : []));
+    assert.equal(ass.length, 2, 'two assassins for 10 players');
+    assert.equal(civ.length, 8);
+    await until(() => Date.now() >= rm.startsAt + 300, 15000, 'round start');
+    // Roles leave the server only in spy:end. Check everything the TV got since the round began.
+    assert.ok(!mine().some((m) => m.type !== 'spy:end' && /"role"|assassin|civilian/i.test(JSON.stringify(m))), 'roles leaked to the TV');
+    assert.ok(!tv.layerMsgs.some((m) => m.type === 'spy:end' && (m.data as any).round === n), 'spy:end before any arrest');
+    // A phone cannot act: spy:act sent to the server by a bot is ignored.
+    bots[civ[0]].socket.emit('to-server', { type: 'spy:act', data: { actor: bots[civ[0]].id, target: bots[ass[0]].id, dist: 1 } });
+    await sleep(300);
+    assert.ok(!mine().some((m) => m.type === 'spy:result'), 'phone spy:act to server ignored');
+    // The TV arrests both assassins, one civilian each.
+    ass.forEach((a, k) => tv.toServer('spy:act', { actor: bots[civ[k]].id, target: bots[a].id, dist: 1 }));
+    await until(() => tv.layerMsgs.some((m) => m.type === 'spy:end' && (m.data as any).round === n), 15000, `spy:end ${n}`);
+    const end = tv.layerMsgs.find((m) => m.type === 'spy:end' && (m.data as any).round === n)!.data as any;
+    assert.equal(end.reason, 'assassins-caught');
+    assert.equal(end.final, n === 3);
+    assert.equal(end.scores.length, N);
+    for (const s of end.scores) {
+      const i = bots.findIndex((b) => b.id === s.id);
+      assert.equal(s.role, roles[i]);
+      const arrester = i === civ[0] || i === civ[1];
+      assert.equal(s.points, roles[i] === 'assassin' ? 0 : arrester ? 400 : 100, `points for bot ${i}`);
+    }
+    notes.push(`r${n} ${end.reason}`);
+    if (n < 3) tv.toServer('spy:next', { round: n });
+  }
+  const results = tv.layerMsgs.filter((m) => m.type === 'spy:result').length;
+  assert.equal(results, 6, '2 arrests x 3 rounds');
+  return `3 rounds, roles only in spy:end, ${notes.join(', ')}, ${results} results`;
+}
+
 const SCENARIOS: Record<string, { run: (c: Ctx) => Promise<string>; pick: boolean; env?: Record<string, string> }> = {
   tenyen: { run: tenyen, pick: true },
   tilt: { run: tilt, pick: true },
   pictionary: { run: pictionary, pick: true },
   market: { run: market, pick: false },
   kart: { run: kart, pick: true },
+  spy: { run: spy, pick: true },
 };
 
 interface Row { game: string; status: 'PASS' | 'FAIL' | 'SKIP'; ms: number; note: string }
@@ -313,6 +361,7 @@ async function main(): Promise<number> {
       process.env.HP_PICTIONARY_REVEAL_MS ??= '400';
       process.env.HP_PICTIONARY_ROUNDS ??= '3';
       process.env.HP_PICTIONARY_ROUND_MS ??= '30000';
+      process.env.HP_SPY_CARD_MS ??= '700';
       const { startServer } = await import('../server/index.ts');
       const { serverGames } = await import('../shared/registry.ts');
       srv = await startServer({ port: 0, mode: 'prod', quiet: true });

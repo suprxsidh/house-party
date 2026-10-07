@@ -1,0 +1,11 @@
+soak local  2026-10-07T16:34:06.928Z  total 4.2 s
+game        result  time      note
+spy         PASS    4.0 s     3 rounds, roles only in spy:end, r1 assassins-caught, r2 assassins-caught, r3 assassins-caught, 6 results
+SOAK OK
+
+--- log ---
+[16:34:02.751] local prod-like server on http://localhost:57441
+[16:34:02.774] room DQJP created
+[16:34:02.826] 10 bots joined, leader p1
+[16:34:02.826] --- spy ---
+[16:34:06.874] PASS spy: 3 rounds, roles only in spy:end, r1 assassins-caught, r2 assassins-caught, r3 assassins-caught, 6 results
