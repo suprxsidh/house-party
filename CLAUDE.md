@@ -7,7 +7,7 @@ Web party platform for the 2026-10-09 Bangalore party. TV laptop shows a QR code
 - Secrets in `.env` only (gitignored). Never print or commit them.
 - Public repo `suprxsidh/house-party`. Run `gh auth switch --user suprxsidh` first. Never touch `suprxsidh/boredroom`.
 - `kart/` is a copy of kart-royale (MIT, `LICENSE-kart-royale`). Do not run its `tools/`. Do not refactor it.
-- Spy in the Crowd is out of scope (see `future_plans.md`).
+- Spy in the Crowd (game 6): `games/spy`. Contract in `games/spy/types.ts`; rules in `games/spy/rules.ts`. Roles stay on the server until `spy:end`. TV sends `spy:ready` on mount. Tests: `npm test -- spy`, `npm test -- spy-ten` (real TV, 10 bots, `HP_REMOTE_URL` for Render).
 
 ## Working knowledge
 - One Node process: Express, Socket.IO, Vite. Pages: `/host` (TV), `/play` (phone), `/kart`.

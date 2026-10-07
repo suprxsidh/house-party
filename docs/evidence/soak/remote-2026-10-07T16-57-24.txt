@@ -1,0 +1,24 @@
+soak remote https://house-party-2pdd.onrender.com  2026-10-07T16:58:42.486Z  total 77.5 s
+game        result  time      note
+tenyen      PASS    0.6 s     3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+tilt        PASS    63.1 s    falls 6, total points 50, results on TV+phones, TV clean
+pictionary  PASS    11.4 s    3 rounds, drawers p1,p2,p3, words doghouse,truck,stool, scores 250+50+249+200
+market      PASS    0.7 s     stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
+kart        PASS    0.1 s     STUB: picked, room game = kart (no gameplay asserts yet)
+SOAK OK
+
+--- log ---
+[16:57:24.964] warming https://house-party-2pdd.onrender.com (up to 90 s)
+[16:57:25.113] healthz 200 after 145 ms: {"ok":true,"rooms":0,"commit":"ee25538"}
+[16:57:25.493] room KAER created
+[16:57:26.290] 10 bots joined, leader p1
+[16:57:26.290] --- tenyen ---
+[16:57:26.920] PASS tenyen: 3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+[16:57:26.996] --- tilt ---
+[16:58:30.082] PASS tilt: falls 6, total points 50, results on TV+phones, TV clean
+[16:58:30.174] --- pictionary ---
+[16:58:41.535] PASS pictionary: 3 rounds, drawers p1,p2,p3, words doghouse,truck,stool, scores 250+50+249+200
+[16:58:41.608] --- market ---
+[16:58:42.272] PASS market: stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
+[16:58:42.272] --- kart ---
+[16:58:42.351] PASS kart: STUB: picked, room game = kart (no gameplay asserts yet)

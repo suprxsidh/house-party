@@ -1,0 +1,12 @@
+soak remote https://house-party-2pdd.onrender.com  2026-10-07T16:59:08.293Z  total 22.2 s
+game        result  time      note
+spy         PASS    20.4 s    3 rounds, roles only in spy:end, r1 assassins-caught, r2 assassins-caught, r3 assassins-caught, 6 results
+SOAK OK
+
+--- log ---
+[16:58:46.121] warming https://house-party-2pdd.onrender.com (up to 90 s)
+[16:58:46.433] healthz 200 after 305 ms: {"ok":true,"rooms":1,"commit":"ee25538"}
+[16:58:46.724] room SPYZ created
+[16:58:47.658] 10 bots joined, leader p1
+[16:58:47.658] --- spy ---
+[16:59:08.011] PASS spy: 3 rounds, roles only in spy:end, r1 assassins-caught, r2 assassins-caught, r3 assassins-caught, 6 results

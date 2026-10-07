@@ -1,0 +1,28 @@
+2026-10-07T16:59:11.659Z remote https://house-party-2pdd.onrender.com room WHTA: 10 bots joined, budget 480 s
+2026-10-07T16:59:12.190Z round 1: assassins Bot8,Bot10; 8 civilians; bots 30
+2026-10-07T16:59:21.483Z joystick: Bot1 moved 5.30 m in 2.5 s of stick input
+2026-10-07T16:59:22.078Z   Bot1 -> Bot8: arrest-ok
+2026-10-07T16:59:22.474Z   Bot2 -> Bot10: arrest-ok
+2026-10-07T16:59:22.501Z round 1 ended: assassins-caught, final=false
+2026-10-07T16:59:22.508Z round 1: 2 events, scores match the engine; points Bot1=400 Bot2=400 Bot3=100 Bot4=100 Bot5=100 Bot6=100 Bot7=100 Bot8=0 Bot9=100 Bot10=0
+2026-10-07T16:59:24.098Z round 2: assassins Bot4,Bot5; 8 civilians; bots 30
+2026-10-07T16:59:31.771Z reconnect: Bot4 dropped and came back, role assassin (was assassin), round 2, same id true
+2026-10-07T16:59:32.252Z   Bot4 -> Bot1: kill
+2026-10-07T16:59:32.511Z   Bot5 -> Bot2: kill
+2026-10-07T16:59:36.325Z   Bot4 -> Bot3: kill
+2026-10-07T16:59:36.719Z   Bot5 -> Bot6: kill
+2026-10-07T16:59:40.569Z   Bot4 -> Bot7: kill
+2026-10-07T16:59:41.110Z   Bot5 -> Bot8: kill
+2026-10-07T16:59:44.896Z   Bot4 -> Bot9: kill
+2026-10-07T16:59:45.153Z   Bot5 -> Bot10: kill
+2026-10-07T16:59:45.170Z round 2 ended: civilians-out, final=false
+2026-10-07T16:59:45.178Z round 2: 8 events, scores match the engine; points Bot1=0 Bot2=0 Bot3=0 Bot4=600 Bot5=600 Bot6=0 Bot7=0 Bot8=0 Bot9=0 Bot10=0
+2026-10-07T16:59:46.704Z round 3: assassins Bot1,Bot7; 8 civilians; bots 30
+2026-10-07T16:59:53.705Z   Bot1 -> Bot2: kill
+2026-10-07T16:59:54.046Z   Bot3 -> bot-0: arrest-wrong
+2026-10-07T16:59:54.320Z   Bot4 -> Bot1: arrest-ok
+2026-10-07T16:59:54.588Z   Bot5 -> Bot7: arrest-ok
+2026-10-07T16:59:54.620Z round 3 ended: assassins-caught, final=true
+2026-10-07T16:59:54.629Z round 3: 4 events, scores match the engine; points Bot1=100 Bot2=0 Bot3=0 Bot4=400 Bot5=400 Bot6=100 Bot7=0 Bot8=100 Bot9=100 Bot10=100
+2026-10-07T16:59:55.314Z stuck check: longest a crowd bot stood still 4.0 s, bots stuck over 10 s: 0
+2026-10-07T16:59:55.314Z PASS: 3 rounds (assassins-caught, civilians-out, assassins-caught) in 46 s
