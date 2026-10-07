@@ -205,6 +205,8 @@ async function boot() {
   }
   requestAnimationFrame(frame);
   (window as any).__gameReady = false;
+  // House Party: phone controllers, enabled by ?party=1 (see src/party/).
+  if (new URLSearchParams(location.search).has('party')) (await import('./party/adapter')).installParty(ctx);
 }
 
 /** Fades the boot curtain once a real frame is actually on screen. */
@@ -566,6 +568,7 @@ let descentsReverted = 0;
  *  the measurement this flag is for).
  * ===========================================================================
  */
+const RENDER_EVERY = Math.max(1, Math.floor(Number(new URLSearchParams(location.search).get('renderevery')) || 1));
 const SCALER_PARAM = new URLSearchParams(location.search).get('scaler');
 /** True when the ladder must never call `setDynamicScale` again. */
 const SCALER_PINNED = SCALER_PARAM !== null && SCALER_PARAM !== '';
@@ -757,6 +760,8 @@ function frame(now: number) {
   // simulation keeps running; only the present is withheld.
   if (!surfaceValid && maySkip) {
     // no present this frame
+  } else if (((window as any).__renderEvery ?? RENDER_EVERY) > 1 && maySkip && ctx.frame % ((window as any).__renderEvery ?? RENDER_EVERY) !== 0) {
+    // test-only (?renderevery=N): simulate every frame, draw one in N, so a software GL run is not render-bound
   } else if (skipRender > 0 && maySkip) {
     skipRender--;
   } else {

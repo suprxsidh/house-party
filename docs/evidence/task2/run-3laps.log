@@ -1,0 +1,20 @@
+2026-10-07T09:54:54.639Z room FPAV: 10 bots joined
+2026-10-07T09:56:19.047Z kart page up: 10 karts, phase countdown, laps 3
+2026-10-07T09:56:33.765Z phase countdown t=0s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 0
+2026-10-07T09:56:48.812Z phase racing t=5.13s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:11.999Z phase racing t=12.03s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:27.009Z phase racing t=27.63s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:42.032Z phase racing t=42.67s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:57.082Z phase racing t=57.71s laps(done) 1,1,0,1,0,0,1,1,0,1 finished 0/10 remote 10
+2026-10-07T09:58:12.132Z phase racing t=72.76s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T09:58:27.183Z phase racing t=87.81s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T09:58:42.232Z phase racing t=102.86s laps(done) 1,2,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T09:58:57.283Z phase racing t=117.91s laps(done) 2,2,1,2,2,2,2,2,1,2 finished 0/10 remote 10
+2026-10-07T09:59:12.328Z phase racing t=132.96s laps(done) 2,2,2,2,2,2,2,2,2,2 finished 0/10 remote 10
+2026-10-07T09:59:27.386Z phase racing t=148.01s laps(done) 2,2,2,2,2,2,2,2,2,2 finished 0/10 remote 10
+2026-10-07T09:59:42.462Z phase racing t=163.09s laps(done) 2,3,2,2,2,2,2,2,2,2 finished 1/10 remote 10
+2026-10-07T09:59:57.531Z phase racing t=178.16s laps(done) 2,3,2,3,3,3,3,3,3,3 finished 8/10 remote 10
+2026-10-07T10:00:01.047Z final phase results t=181.66s after 208s wall, 22100 inputs sent
+2026-10-07T10:00:01.047Z lap counts per kart: Bot1:3F Bot2:3F Bot3:3F Bot4:3F Bot5:3F Bot6:3F Bot7:3F Bot8:3F Bot9:3F Bot10:3F
+2026-10-07T10:00:12.868Z results on all 10 phones: 1.Bot2 2.Bot10 3.Bot8 4.Bot4 5.Bot5 6.Bot6 7.Bot9 8.Bot7 9.Bot1 10.Bot3
+2026-10-07T10:00:12.962Z PASS

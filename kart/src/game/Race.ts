@@ -36,6 +36,7 @@ import {
 import { Kart } from '../kart/Kart';
 import { AIField, type DriveCmd } from './AI';
 import { Items } from './Items';
+import { partyKartCount, partyLaps, type RemoteDriver } from '../party/remote';
 
 const ROSTER: KartStats[] = [
   { name: 'Vela',   color: new THREE.Color(0xff3b5c), accelMul: 1.00, topSpeedMul: 1.00, weightMul: 1.0,  handlingMul: 1.00 },
@@ -46,6 +47,8 @@ const ROSTER: KartStats[] = [
   { name: 'Marlow', color: new THREE.Color(0xff8a3d), accelMul: 1.05, topSpeedMul: 0.97, weightMul: 0.9,  handlingMul: 1.08 },
   { name: 'Frost',  color: new THREE.Color(0x7ee8fa), accelMul: 0.98, topSpeedMul: 1.02, weightMul: 1.0,  handlingMul: 1.00 },
   { name: 'Cinder', color: new THREE.Color(0xe8456b), accelMul: 1.08, topSpeedMul: 0.95, weightMul: 0.88, handlingMul: 1.10 },
+  { name: 'Tango',  color: new THREE.Color(0xf472b6), accelMul: 1.00, topSpeedMul: 1.00, weightMul: 1.0,  handlingMul: 1.02 },
+  { name: 'Quartz', color: new THREE.Color(0xe5e7eb), accelMul: 0.97, topSpeedMul: 1.03, weightMul: 1.05, handlingMul: 0.98 },
 ];
 
 // --- director tuning ---------------------------------------------------------
@@ -149,7 +152,7 @@ export class Race implements IRace {
 
   karts: Kart[] = [];
   player!: Kart;
-  totalLaps = LAP_COUNT;
+  totalLaps = partyLaps(LAP_COUNT);
   raceTime = 0;
   countdown = 3;
   lapTimes: number[] = [];
@@ -185,6 +188,13 @@ export class Race implements IRace {
    */
   driveOverride: ((cmd: DriveCmd) => void) | null = null;
 
+  /**
+   * House Party: phone controllers. When set, a kart that has a remote command
+   * is driven by it instead of the AI, `player` follows the race leader, and the
+   * human `isPlayer` path is unused.
+   */
+  remote: RemoteDriver | null = null;
+
   /** scratch command handed to `driveOverride`, so the hook allocates nothing */
   private readonly overrideCmd: DriveCmd = {
     steer: 0, throttle: 0, brake: 0, drift: false, useItem: false, itemBackwards: false,
@@ -209,7 +219,7 @@ export class Race implements IRace {
 
   init(ctx: Ctx) {
     this.ctx = ctx;
-    const n = Math.min(RACER_COUNT, ROSTER.length);
+    const n = Math.min(RACER_COUNT, ROSTER.length, partyKartCount(RACER_COUNT));
     for (let i = 0; i < n; i++) {
       const k = new Kart(i, i === 0, ROSTER[i]);
       ctx.scene.add(k.object);
@@ -458,12 +468,16 @@ export class Race implements IRace {
     const rolling = live || this.state === RaceState.Finished || this.state === RaceState.Results;
 
     // --- drive --------------------------------------------------------------
+    // Remote mode: the HUD, shake, sky and results all read `player`, so keep it
+    // on whoever leads.
+    if (this.remote && this.standings.length) this.player = this.standings[0] as Kart;
     this.ai.beginFrame(this.karts, this.player, dt);
 
     for (let i = 0; i < this.karts.length; i++) {
       const k = this.karts[i];
       const p = this.prog[i];
       let steer = 0, throttle = 0, brake = 0, drift = false;
+      const rc = this.remote ? this.remote.command(k) : null;
 
       if (p.respawnT > 0) {
         // dropped in: hands off until the suspension has taken the landing
@@ -471,7 +485,14 @@ export class Race implements IRace {
       } else if (rolling) {
         // The player is handed back to the AI once their race is run, so the
         // results screen has a moving circuit behind it rather than a statue.
-        if (k.isPlayer && !this.autoDrive && !k.finished && this.state !== RaceState.Results) {
+        if (rc && !k.finished && this.state !== RaceState.Results) {
+          // phone controller
+          steer = rc.steer;
+          throttle = rc.throttle;
+          brake = rc.brake;
+          drift = rc.drift;
+          if (rc.useItem) ctx.items.use(k, false);
+        } else if (k.isPlayer && !this.autoDrive && !k.finished && this.state !== RaceState.Results) {
           steer = input.steer;
           throttle = input.accel;
           brake = input.brake;
@@ -508,6 +529,11 @@ export class Race implements IRace {
           if (input.accel > 0.5 && !input.accelAuto) p.hold += dt;
           else p.hold = 0;
         }
+        if (rc && !k.isPlayer) {
+          // a held gas at the lights is a rocket start; see tickCountdown
+          if (rc.throttle > 0.5) p.hold += dt;
+          else p.hold = 0;
+        }
         this.ai.drive(ctx, k, dt, this.karts, false);
         this.holdOnGrid(k);
       }
@@ -525,7 +551,7 @@ export class Race implements IRace {
 
       // Rubber band, applied as a slipstream-scale acceleration rather than as
       // a boost — it must never light up the exhausts or read as a cheat.
-      if (live && !k.isPlayer && !k.finished && k.stunTime <= 0 && !k.airborne) {
+      if (live && !k.isPlayer && !rc && !(this.remote?.owns(k)) && !k.finished && k.stunTime <= 0 && !k.airborne) {
         const a = this.ai.assistFor(k);
         if (a !== 0 && k.forwardSpeed > 4) {
           _v.copy(k.forward).multiplyScalar(a * dt);
@@ -583,7 +609,9 @@ export class Race implements IRace {
       const k = this.karts[i];
       const p = this.prog[i];
       p.lapStart = 0;
-      const hold = k.isPlayer ? p.hold : this.aiRocketHold(k);
+      const hold = k.isPlayer ? p.hold
+        : this.remote?.owns(k) ? (p.hold <= BURNOUT_WINDOW ? p.hold : 0) // phones never burn out
+        : this.aiRocketHold(k);
       if (hold > 0.02 && hold < ROCKET_WINDOW) {
         // perfect launch
         k.applyBoost(1.35, 1.26);

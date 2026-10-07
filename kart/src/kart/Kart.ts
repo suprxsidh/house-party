@@ -607,7 +607,6 @@ const AIR_STEER = 1.5; // rad/s of yaw authority with no wheels down
 const TRICK_MIN_AIR = 0.3;
 
 const WALL_RESTITUTION = 0.28;
-const KART_RESTITUTION = 0.42;
 
 /**
  * How far the bodywork may sink below its resting low point while leaning, in
@@ -645,13 +644,9 @@ const _contactVel = new THREE.Vector3();
 const _force = new THREE.Vector3();
 const _torque = new THREE.Vector3();
 const _planar = new THREE.Vector3();
-const _sep = new THREE.Vector3();
 const _euler = new THREE.Euler();
 const _lead = new THREE.Vector3();
 const _leadPos = new THREE.Vector3();
-
-/** Every live kart, so kart-vs-kart contacts resolve without a broadphase system. */
-const ACTIVE: Kart[] = [];
 
 /**
  * The slice of KartModel's DriverRig this module drives. Matched structurally
@@ -918,7 +913,6 @@ export class Kart implements IKart {
     this.suspension.setMass(this.mass, GRAVITY);
     this.suspension.reset();
 
-    ACTIVE.push(this);
   }
 
   // ---------------------------------------------------------------------------
@@ -1220,7 +1214,7 @@ export class Kart implements IKart {
       this.updateDriftState(ctx, h, wantDrift);
       this.substep(h, throttle, brake, stunned);
       this.collideWalls(ctx);
-      this.collideKarts(ctx, h);
+      // House Party: ghost karts. Karts pass through each other; walls and hazards stay solid.
       this.updateAirborne(ctx, h);
     }
     const grounded = this.suspension.contacts > 0;
@@ -1983,58 +1977,6 @@ export class Kart implements IKart {
       ctx.bus.emit({ type: 'collide', kart: this, other: null, impulse });
       this.driverRig?.jolt(clamp(impulse * 0.07, 0, 1.4));
       if (this.isPlayer) ctx.shake(clamp(impulse * 0.02, 0, 0.5), 0.28);
-    }
-  }
-
-  /**
-   * Each kart applies only its own half of every pair impulse, using the
-   * other's current velocity. Both halves land in the same frame, so the result
-   * is symmetric without needing a central broadphase pass.
-   */
-  private collideKarts(ctx: Ctx, h: number) {
-    const minDist = KART_RADIUS * 2;
-    for (let i = 0; i < ACTIVE.length; i++) {
-      const other = ACTIVE[i];
-      if (other === this) continue;
-      _sep.subVectors(this.position, other.position);
-      // Karts bump, they never stack — and on a track that crosses over itself
-      // the kart on the bridge must not shove the one underneath it.
-      if (Math.abs(_sep.y) > 1.5) continue;
-      _sep.y = 0;
-      const d2 = _sep.lengthSq();
-      if (d2 > minDist * minDist || d2 < 1e-6) continue;
-      const d = Math.sqrt(d2);
-      _sep.multiplyScalar(1 / d);
-
-      const total = this.mass + other.mass;
-      const share = other.mass / total;
-      this.position.addScaledVector(_sep, (minDist - d) * share * 0.9);
-
-      const rel = this.velocity.dot(_sep) - other.velocity.dot(_sep);
-      if (rel < 0) {
-        const j = -(1 + KART_RESTITUTION) * rel * share;
-        this.velocity.addScaledVector(_sep, j);
-        // A shove also rotates you — this is what makes a side-swipe read.
-        this.yawRate += clamp(_sep.dot(this.right) * rel * 0.06, -1.6, 1.6);
-        if (this.collideCooldown <= 0 && -rel > 2) {
-          this.collideCooldown = 0.14;
-          ctx.bus.emit({ type: 'collide', kart: this, other, impulse: -rel });
-          this.driverRig?.jolt(clamp(-rel * 0.05, 0, 1));
-          if (this.isPlayer) ctx.shake(clamp(-rel * 0.014, 0, 0.3), 0.22);
-        }
-      } else {
-        // Resting overlap: push apart briskly. Too soft here and a kart shoving
-        // a slower one takes seconds to squeeze past, which reads as the two
-        // being welded together.
-        //
-        // Written as an ACCELERATION (hence the `* 60 * h`), not as a velocity
-        // step. It used to be a flat velocity add applied once per frame, which
-        // meant a kart wedged against another was shoved exactly as hard on a
-        // 20 fps frame as on a 120 fps one despite the frame covering six times
-        // as much time — the separation rate was a function of the player's
-        // hardware. The scale is chosen so the behaviour at 60 fps is unchanged.
-        this.velocity.addScaledVector(_sep, Math.min(4, (minDist - d) * 9) * share * 60 * h);
-      }
     }
   }
 

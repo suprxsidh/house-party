@@ -420,4 +420,4 @@ export const SURFACE_PROPS: Record<Surface, SurfaceProps> = {
 /** metres per second at 100% throttle on road, before stat multipliers */
 export const BASE_TOP_SPEED = 30;
 export const LAP_COUNT = 3;
-export const RACER_COUNT = 8;
+export const RACER_COUNT = 10;

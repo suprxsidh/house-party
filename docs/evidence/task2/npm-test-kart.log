@@ -1,0 +1,46 @@
+
+> house-party@0.1.0 test
+> node scripts/test.mjs kart
+
+10 simultaneous inputs: steer -0.9,-0.7,-0.5,-0.3,-0.1,0.1,0.3,0.5,0.7,0.9 taps 3,3,3,3,3,3,3,3,3,3
+✔ review 3: ten bots act at the same moment, no input or item tap is lost (147997.742708ms)
+seat p3 kart 2: dropped -> AI -> rejoined, remote again
+✔ review 2: phone drops mid-race and rejoins: same seat, same kart, drives again (163955.946542ms)
+✔ AI fills slots only when fewer than 4 humans (145397.259792ms)
+phone HUD: 1st Lap 1/3 Item: none
+✔ real phone page: tilt steers, buttons fallback, item tap, HUD shows position and lap (153269.00925ms)
+2026-10-07T09:54:54.639Z room FPAV: 10 bots joined
+2026-10-07T09:56:19.047Z kart page up: 10 karts, phase countdown, laps 3
+2026-10-07T09:56:33.765Z phase countdown t=0s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 0
+2026-10-07T09:56:48.812Z phase racing t=5.13s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:11.999Z phase racing t=12.03s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:27.009Z phase racing t=27.63s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:42.032Z phase racing t=42.67s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T09:57:57.082Z phase racing t=57.71s laps(done) 1,1,0,1,0,0,1,1,0,1 finished 0/10 remote 10
+2026-10-07T09:58:12.132Z phase racing t=72.76s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T09:58:27.183Z phase racing t=87.81s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T09:58:42.232Z phase racing t=102.86s laps(done) 1,2,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T09:58:57.283Z phase racing t=117.91s laps(done) 2,2,1,2,2,2,2,2,1,2 finished 0/10 remote 10
+2026-10-07T09:59:12.328Z phase racing t=132.96s laps(done) 2,2,2,2,2,2,2,2,2,2 finished 0/10 remote 10
+2026-10-07T09:59:27.386Z phase racing t=148.01s laps(done) 2,2,2,2,2,2,2,2,2,2 finished 0/10 remote 10
+2026-10-07T09:59:42.462Z phase racing t=163.09s laps(done) 2,3,2,2,2,2,2,2,2,2 finished 1/10 remote 10
+2026-10-07T09:59:57.531Z phase racing t=178.16s laps(done) 2,3,2,3,3,3,3,3,3,3 finished 8/10 remote 10
+2026-10-07T10:00:01.047Z final phase results t=181.66s after 208s wall, 22100 inputs sent
+2026-10-07T10:00:01.047Z lap counts per kart: Bot1:3F Bot2:3F Bot3:3F Bot4:3F Bot5:3F Bot6:3F Bot7:3F Bot8:3F Bot9:3F Bot10:3F
+2026-10-07T10:00:12.868Z results on all 10 phones: 1.Bot2 2.Bot10 3.Bot8 4.Bot4 5.Bot5 6.Bot6 7.Bot9 8.Bot7 9.Bot1 10.Bot3
+2026-10-07T10:00:12.962Z PASS
+✔ proof: 10 bots drive 3 laps in the TV page, race finishes, results return to lobby (318697.990416ms)
+✔ kart server part: results come from the TV only, are cleaned, and survive a rejoin (804.726125ms)
+✔ cleanResults bounds and sanitises (0.694959ms)
+✔ portrait: right side down steers right (1.18375ms)
+✔ landscape top-left (angle 90): clockwise wheel turn steers right (0.089875ms)
+✔ landscape top-right (angle 270): clockwise turn steers right (0.072875ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 932310.847375
+done

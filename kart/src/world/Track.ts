@@ -14,7 +14,7 @@
  */
 import * as THREE from 'three';
 import type { Ctx, ITrack, SurfaceProbe, TrackSample } from '../types';
-import { Surface } from '../types';
+import { RACER_COUNT, Surface } from '../types';
 import {
   buildCenterline, findCorners, terrainDetail, smoothstep as ss, gridSlot, BOOST_PADS, CHECKPOINTS,
   CROWN, GRID_LAT, KERB_CROWN0, KERB_CROWN1, KERB_END, KERB_HS, KERB_QS,
@@ -740,7 +740,7 @@ export class Track implements ITrack {
   private buildStartGrid() {
     const cl = this.cl;
     const tmp = makeSample();
-    for (let k = 0; k < 8; k++) {
+    for (let k = 0; k < RACER_COUNT; k++) {
       const { back, lat: rawLat } = gridSlot(k);
       const d = ((-back % cl.length) + cl.length) % cl.length;
       const s = this.sampleByDistance(d, tmp);

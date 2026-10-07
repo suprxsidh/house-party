@@ -4,3 +4,4 @@ import './tenyen/phone/index.ts';
 import './market/phone/index.ts';
 import './tilt/phone/index.ts';
 import './pictionary/phone/index.ts';
+import './kart/phone/index.ts';
