@@ -85,6 +85,7 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
     clearTimeout(room.deleteTimer);
     room.deleteTimer = setTimeout(() => {
       if (!room.tvSocketId) {
+        for (const l of room.layers.values()) l.onEnd?.();
         rooms.delete(room.code);
         log('room expired', room.code);
       }
@@ -102,6 +103,7 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
   };
 
   const gameCtx = (room: Room): ServerGameContext => ({
+    leaderId: () => room.leaderId,
     players: () => room.seats.map((s) => ({ id: s.id, name: s.name })),
     leaderId: () => room.leaderId ?? null,
     isConnected: (id) => !!room.byId(id)?.socketId,
@@ -123,6 +125,17 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
     room.serverGame = undefined;
     room.game = null;
   };
+  /** Start every registered layer (info.layer) for a new room. */
+  const startLayers = (room: Room) => {
+    for (const [id, reg] of serverGames) {
+      if (!reg.info.layer || !reg.create) continue;
+      const g = reg.create();
+      room.layers.set(id, g);
+      g.onStart(gameCtx(room));
+    }
+  };
+  /** A to-server type like "market:buy" belongs to layer "market". */
+  const layerFor = (room: Room, type: string) => room.layers.get(type.split(':')[0]);
   const startGame = (room: Room, id: string) => {
     endGame(room);
     room.game = { id };
@@ -168,6 +181,7 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
         room = new Room(code);
         room.tvSecret = secretIn ?? makeToken();
         rooms.set(code, room);
+        startLayers(room);
         log('room created', code);
       } else if (secretIn !== room.tvSecret) {
         return ack(fail('TV_AUTH', `Room ${code} is already running on another screen.`));
@@ -181,6 +195,7 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
       socket.join(code);
       ack({ ok: true, code, secret: room.tvSecret, state: room.state() });
       broadcast(room);
+      for (const l of room.layers.values()) l.onTvConnected?.();
     });
 
     safe<JoinReply>('phone:join', (payload, ack) => {
@@ -226,6 +241,7 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
       ack({ ok: true, code, token: seat.token, you: { id: seat.id, name: seat.name }, state: room.state() });
       broadcast(room);
       room.serverGame?.onPlayerConnected?.(seat.id);
+      for (const l of room.layers.values()) l.onPlayerConnected?.(seat.id);
     });
 
     const currentRoom = () => (roomCode ? rooms.get(roomCode) : undefined);
@@ -245,7 +261,7 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
       const room = currentRoom();
       if (!room || role !== 'phone' || seatId !== room.leaderId) return ack(fail('NOT_LEADER', 'Only the leader can pick.'));
       const gameId = isObj(payload) ? payload.gameId : undefined;
-      if (typeof gameId !== 'string' || !serverGames.has(gameId)) return ack(fail('BAD_REQUEST', 'Unknown game.'));
+      if (typeof gameId !== 'string' || !serverGames.has(gameId) || serverGames.get(gameId)?.info.layer) return ack(fail('BAD_REQUEST', 'Unknown game.'));
       startGame(room, gameId);
       ack({ ok: true });
       broadcast(room);
@@ -262,9 +278,11 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
     // Phone or TV -> the game's server part
     safe<void>('to-server', (payload) => {
       const room = currentRoom();
-      if (!room?.serverGame || !isObj(payload) || typeof payload.type !== 'string') return;
-      if (role === 'phone' && seatId) room.serverGame.onPhoneMessage(seatId, payload.type, payload.data);
-      else if (role === 'tv') room.serverGame.onTvMessage?.(payload.type, payload.data);
+      if (!room || !isObj(payload) || typeof payload.type !== 'string') return;
+      const target = layerFor(room, payload.type) ?? room.serverGame;
+      if (!target) return;
+      if (role === 'phone' && seatId) target.onPhoneMessage(seatId, payload.type, payload.data);
+      else if (role === 'tv') target.onTvMessage?.(payload.type, payload.data);
     });
     // Phone -> TV
     safe<void>('to-tv', (payload) => {

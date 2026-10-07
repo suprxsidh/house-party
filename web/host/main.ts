@@ -17,6 +17,23 @@ let state: RoomState | null = null;
 let code: string | null = new URLSearchParams(location.search).get('room')?.toUpperCase() || safeGet(KEY);
 let qrFor = '';
 let current: { id: string; game: TvGame } | null = null;
+const layers = new Map<string, TvGame>(); // always-on side layers (info.layer)
+const tvCtx = (root: HTMLElement) => ({
+  root,
+  players: () => (state?.players ?? []).map((p) => ({ id: p.id, name: p.name })),
+  toPhone: (playerId: string, type: string, data?: unknown) => socket.emit('to-phone', { playerId, type, data }),
+  toPhones: (type: string, data?: unknown) => socket.emit('to-phones', { type, data }),
+  toServer: (type: string, data?: unknown) => socket.emit('to-server', { type, data }),
+});
+for (const [id, reg] of hostGames) {
+  if (!reg.info.layer) continue;
+  const root = document.createElement('section');
+  root.id = `layer-${id}`;
+  document.body.append(root);
+  const g = reg.create();
+  layers.set(id, g);
+  g.mount(tvCtx(root));
+}
 
 async function showQr(c: string) {
   if (qrFor === c) return;
@@ -70,13 +87,7 @@ function syncGame(s: RoomState) {
   }
   const game = reg.create();
   current = { id: want, game };
-  game.mount({
-    root,
-    players: () => (state?.players ?? []).map((p) => ({ id: p.id, name: p.name })),
-    toPhone: (playerId, type, data) => socket.emit('to-phone', { playerId, type, data }),
-    toPhones: (type, data) => socket.emit('to-phones', { type, data }),
-    toServer: (type, data) => socket.emit('to-server', { type, data }),
-  });
+  game.mount(tvCtx(root));
 }
 
 socket.on('room:state', (s: RoomState) => {
@@ -85,8 +96,11 @@ socket.on('room:state', (s: RoomState) => {
   syncGame(s);
 });
 socket.on('msg', (m: { from?: string; type: string; data: unknown }) => {
-  // No `from` means the message came from the game's server part: playerId is ''.
-  current?.game.onPhoneMessage(m.from ?? '', m.type, m.data);
+  const layer = layers.get(String(m.type).split(':')[0]);
+  // No `from` means the message came from a server part: playerId is 'server'.
+  const from = m.from ?? 'server';
+  if (layer) layer.onPhoneMessage(from, m.type, m.data);
+  else current?.game.onPhoneMessage(from, m.type, m.data);
 });
 
 async function create() {

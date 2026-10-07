@@ -34,12 +34,14 @@ export class FakeTv {
   socket: Socket;
   state?: RoomState;
   msgs: Msg[] = [];
+  /** Layer messages (type like "market:state") live here, not in `msgs`. */
+  layerMsgs: Msg[] = [];
   secret?: string;
   constructor(url: string) {
     FakeTv.all.add(this);
     this.socket = io(url, { transports: ['websocket'] });
     this.socket.on('room:state', (s: RoomState) => (this.state = s));
-    this.socket.on('msg', (m: Msg) => this.msgs.push(m));
+    this.socket.on('msg', (m: Msg) => (/^[a-z]+:/.test(m.type) ? this.layerMsgs : this.msgs).push(m));
   }
   /** Pass `secret` to re-attach to a live room (a TV reload keeps it in localStorage). */
   async create(code?: string, secret?: string): Promise<TvCreateReply> {

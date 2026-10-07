@@ -16,6 +16,7 @@ let target: string | null = null; // room we want to be in; set once a join work
 let me: { id: string; name: string } | null = null;
 let state: RoomState | null = null;
 let current: { id: string; game: PhoneGame } | null = null;
+const layers = new Map<string, PhoneGame>(); // always-on side layers (info.layer)
 let retry: ReturnType<typeof setTimeout> | undefined;
 
 const params = new URLSearchParams(location.search);
@@ -79,11 +80,32 @@ function apply(s: RoomState) {
   $('picker').hidden = !leader || !!s.game;
   $('game-bar').hidden = !leader || !s.game;
   syncGame(s);
+  mountLayers();
+  for (const l of layers.values()) l.onRoomState?.();
+}
+
+function mountLayers() {
+  if (layers.size || !me) return;
+  for (const [id, reg] of phoneGames) {
+    if (!reg.info.layer) continue;
+    const root = document.createElement('section');
+    root.id = `layer-${id}`;
+    $('game-root').after(root);
+    const g = reg.create();
+    layers.set(id, g);
+    g.mount({
+      root,
+      me: me!,
+      isLeader: () => !!state?.players.find((p) => p.id === me?.id)?.leader,
+      toTv: (type, data) => socket.emit('to-tv', { type, data }),
+      toServer: (type, data) => socket.emit('to-server', { type, data }),
+    });
+  }
 }
 
 function buildPicker() {
   const list = $('picker-list');
-  const games = [...phoneGames.values()];
+  const games = [...phoneGames.values()].filter((g) => !g.info.layer);
   if (!games.length) list.textContent = 'No games installed yet.';
   list.replaceChildren(
     ...games.map(({ info }) => {
@@ -111,13 +133,14 @@ function syncGame(s: RoomState) {
   game.mount({
     root,
     me,
+    isLeader: () => !!state?.players.find((p) => p.id === me?.id)?.leader,
     toTv: (type, data) => socket.emit('to-tv', { type, data }),
     toServer: (type, data) => socket.emit('to-server', { type, data }),
   });
 }
 
 socket.on('room:state', (s: RoomState) => { if (me) apply(s); });
-socket.on('msg', (m: { type: string; data: unknown }) => current?.game.onMessage(m.type, m.data));
+socket.on('msg', (m: { type: string; data: unknown }) => (layers.get(m.type.split(':')[0]) ?? current?.game)?.onMessage(m.type, m.data));
 socket.on('connect', () => { if (target) void rejoin(); });
 socket.on('disconnect', () => {
   if (!target) return;

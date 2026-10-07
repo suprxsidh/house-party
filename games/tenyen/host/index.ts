@@ -132,8 +132,8 @@ registerHost(info, (): TvGame => {
       ctx.toServer('tv-ready');
     },
     onPhoneMessage(playerId, type, data) {
-      // Only the server part (playerId '') drives this screen. Phones talk to the server, not the TV.
-      if (playerId === '' && type === 'state' && el.q) render(data as TvState);
+      // Only the server part (playerId 'server') drives this screen. Phones talk to the server, not the TV.
+      if (playerId === 'server' && type === 'state' && el.q) render(data as TvState);
     },
     destroy() {
       style?.remove();
