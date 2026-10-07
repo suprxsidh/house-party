@@ -8,6 +8,6 @@ Only Suprasidh can do this.
 4. Tilt each phone. The TV must react.
 5. In kart, check the delay from tilt to turn. It should feel instant.
 6. If Render is down or slow: run `npm run tunnel`. Open the Public URL on the TV.
-7. If kart is slow: open `/kart?quality=low`.
+7. If kart is slow: open `/host?quality=low` instead (set it before the room starts).
 
 A Render restart wipes rooms. The platform tests cover this: phones rejoin.
