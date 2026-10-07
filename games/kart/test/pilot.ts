@@ -5,7 +5,7 @@ import type { Bot } from '../../../bots/Bot.ts';
 
 export interface Row {
   seat: string | null; kart: number; name: string; human: boolean; remote: boolean; place: number; lap: number;
-  finished: boolean; finishTime: number; item: string; itemCount: number; speed: number; aim: number; targetSpeed: number; inputs: number; steer: number; gas: number; taps: number;
+  finished: boolean; finishTime: number; item: string; itemCount: number; speed: number; aim: number; targetSpeed: number; inputs: number; steer: number; gas: number; taps: number; catchUp: number;
 }
 export interface Snap { phase: string; raceTime: number; laps: number; karts: number; leaderKart: number; rows: Row[]; order: number[] }
 

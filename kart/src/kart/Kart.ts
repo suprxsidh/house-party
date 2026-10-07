@@ -742,6 +742,8 @@ export class Kart implements IKart {
   private steerInput = 0;
   private steerAngle = 0;
   private boostStrength = 1;
+  /** House Party catch-up: fraction added to the top-speed ceiling, set by Race (0 = none). */
+  catchUp = 0;
   private topSpeed = BASE_TOP_SPEED;
 
   // drift / hop / trick
@@ -1338,7 +1340,7 @@ export class Kart implements IKart {
     const boosting = this.boostTime > 0;
     this.topSpeed =
       BASE_TOP_SPEED * this.stats.topSpeedMul * surfMax * (boosting ? this.boostStrength : 1) *
-      (this.starTime > 0 ? 1.06 : 1);
+      (this.starTime > 0 ? 1.06 : 1) * (1 + this.catchUp);
 
     const vf = fwdBefore;
     this.forwardSpeed = vf;

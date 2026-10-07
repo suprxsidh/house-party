@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { RaceState, type Ctx } from '../types';
 import type { Race } from '../game/Race';
 import type { RemoteCmd, RemoteDriver } from './remote';
+import { installPack } from './pack';
 
 /** A phone not heard from for this long hands its kart to the AI until it returns. */
 const STALE_MS = 2500;
@@ -53,6 +54,8 @@ export interface KartRow {
   steer: number;
   gas: number;
   taps: number;
+  /** catch-up speed bonus right now, 0..0.25 */
+  catchUp: number;
 }
 export interface Snapshot {
   phase: 'wait' | 'countdown' | 'racing' | 'finished' | 'results';
@@ -86,6 +89,8 @@ export function installParty(ctx: Ctx) {
     .kr-screens { pointer-events: none !important; }
   `;
   document.head.append(style);
+
+  const pack = installPack(ctx, race);
 
   const driver: RemoteDriver = {
     owns: (k) => byKart.has(k.id),
@@ -186,6 +191,7 @@ export function installParty(ctx: Ctx) {
         steer: s?.steer ?? 0,
         gas: s?.gas ?? 0,
         taps: s?.itemSent ?? 0,
+        catchUp: Math.round(((k as any).catchUp ?? 0) * 1000) / 1000,
       };
     });
     return {
@@ -244,6 +250,10 @@ export function installParty(ctx: Ctx) {
       }));
     },
     forced: () => forced,
+    /** camera evidence: in-frame counters, off-screen time, reposition log */
+    packStats: pack.stats,
+    offscreen: pack.offscreen,
+    ndc: pack.ndc,
     snapshot,
   };
   (window as any).__party = api;

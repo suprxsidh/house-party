@@ -1,0 +1,30 @@
+10:46:25 room VTGT: race running, 3 laps, iframe /kart/?party=1&karts=10
+10:46:28 t=0.15s laps 0,0,0,0,0,0,0,0,0,0 fin 0/10 catchUp 0,0,0,0.004,0.012,0.021,0.029,0.037,0.043,0.051 moved 0 zoom 40-42m
+10:46:49 t=1.85s laps 0,0,0,0,0,0,0,0,0,0 fin 0/10 catchUp 0,0,0,0,0.016,0.008,0.039,0.059,0.001,0.029 moved 0 zoom 37-49m
+10:47:20 t=2.05s laps 0,0,0,0,0,0,0,0,0,0 fin 0/10 catchUp 0,0,0,0,0.016,0.007,0.041,0.066,0,0.029 moved 0 zoom 37-69m
+10:47:40 t=17.43s laps 0,0,0,0,0,0,0,0,0,0 fin 0/10 catchUp 0,0,0.029,0.012,0,0.019,0.034,0.1,0.013,0.131 moved 1 zoom 31-75m
+10:47:57 spread shot at t=22.02: gaps to leader 0:13.4 1:0 2:25.9 3:28 4:19.2 5:30 6:42.6 7:43.6 8:33.4 9:172
+10:48:00 t=25.78s laps 0,0,0,0,0,0,0,0,0,0 fin 0/10 catchUp 0.012,0,0.131,0.203,0.14,0.208,0.233,0.061,0.139,0.094 moved 2 zoom 31-75m
+10:48:20 t=45.85s laps 0,0,0,0,0,0,0,0,0,0 fin 0/10 catchUp 0.036,0,0.079,0.043,0.021,0.047,0.062,0.044,0.049,0.026 moved 10 zoom 27-75m
+10:48:40 t=65.86s laps 1,1,1,1,1,1,1,1,1,1 fin 0/10 catchUp 0.03,0,0.075,0.036,0.008,0.048,0.039,0.059,0.064,0.016 moved 10 zoom 27-75m
+10:49:00 t=85.88s laps 1,1,1,1,1,1,1,1,1,1 fin 0/10 catchUp 0.038,0,0.084,0.043,0.012,0.058,0.051,0.07,0.059,0.022 moved 10 zoom 27-75m
+10:49:20 t=105.95s laps 2,2,2,2,2,2,2,2,2,2 fin 0/10 catchUp 0.038,0,0.08,0.052,0.012,0.054,0.075,0.067,0.091,0.022 moved 10 zoom 27-75m
+10:49:40 t=126.01s laps 2,2,2,2,2,2,2,2,2,2 fin 0/10 catchUp 0.022,0,0.06,0.026,0.007,0.034,0.054,0.047,0.039,0.012 moved 10 zoom 27-75m
+10:50:00 t=146.01s laps 2,2,2,2,2,2,2,2,2,2 fin 0/10 catchUp 0.024,0,0.117,0.026,0.009,0.096,0.047,0.051,0.047,0.055 moved 10 zoom 27-75m
+10:50:06 final phase results t=151.49s wall 220s
+10:50:06 lap counts: Bot1:3F Bot2:3F Bot3:3F Bot4:3F Bot5:3F Bot6:3F Bot7:3F Bot8:3F Bot9:3F Bot10:3F
+10:50:06 CAMERA (test side, 1702 polls): 12529 kart-in-pack samples, 0 outside the viewport
+10:50:06 CAMERA (page side): 16329 pack checks, 0 out, worst |NDC| 0.8870996808483822, 20509/21983 of all kart checks in frame (93.3%), zoom 26.8-84.2 m, longest off-screen 5.02 s
+10:50:06 REPOSITION t=17.4 kart 9: 73 m behind, off screen 5.0 s, lapIndex 0->0, cp 8->9, raceDistance expected 476.4 got 476.6
+10:50:06 REPOSITION t=24.3 kart 9: 208 m behind, off screen 5.0 s, lapIndex 0->0, cp 9->13, raceDistance expected 680.5 got 680.7
+10:50:06 REPOSITION t=28.9 kart 6: 198 m behind, off screen 5.0 s, lapIndex 0->0, cp 12->16, raceDistance expected 826.0 got 825.9
+10:50:06 REPOSITION t=29.0 kart 8: 73 m behind, off screen 5.0 s, lapIndex 0->0, cp 15->16, raceDistance expected 829.3 got 829.2
+10:50:06 REPOSITION t=29.1 kart 3: 186 m behind, off screen 5.0 s, lapIndex 0->0, cp 13->16, raceDistance expected 830.9 got 830.9
+10:50:06 REPOSITION t=29.1 kart 5: 231 m behind, off screen 5.0 s, lapIndex 0->0, cp 12->16, raceDistance expected 830.9 got 830.9
+10:50:06 REPOSITION t=29.3 kart 4: 75 m behind, off screen 5.0 s, lapIndex 0->0, cp 15->16, raceDistance expected 839.1 got 839.1
+10:50:06 REPOSITION t=29.4 kart 2: 78 m behind, off screen 5.0 s, lapIndex 0->0, cp 15->16, raceDistance expected 842.4 got 842.3
+10:50:06 REPOSITION t=30.5 kart 9: 206 m behind, off screen 5.0 s, lapIndex 0->0, cp 13->17, raceDistance expected 880.9 got 880.8
+10:50:06 REPOSITION t=35.6 kart 6: 70 m behind, off screen 5.0 s, lapIndex 0->0, cp 20->21, raceDistance expected 1077.2 got 1077.1
+10:50:06 CATCH-UP: max bonus seen 0.25 (cap 0.25), max bonus on the leader 0; top speed with bonus >=15%: 53.4 m/s, with none: 47 m/s
+10:50:06 MINIMAP: 12 markers drawn in the last frame, 10 karts
+10:50:15 PASS
