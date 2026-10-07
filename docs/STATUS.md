@@ -6,3 +6,4 @@
 - Convention: server-part messages reach the TV with from='server'.
 - Gemini used for: Ten-Yen deck draft (pruned 60 to 51), Pictionary words (pruned 100 to 82).
 - Running next: Task 2 kart (builder in worktree-wt/kart), then Task 3 camera.
+- Fixed merge dup (leaderId). Build clean, 57/57 tests on main. Known flake: 'one socket joining twice' test fails sometimes when other test runs share the CPU.

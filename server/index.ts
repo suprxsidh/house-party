@@ -105,7 +105,6 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
   const gameCtx = (room: Room): ServerGameContext => ({
     leaderId: () => room.leaderId,
     players: () => room.seats.map((s) => ({ id: s.id, name: s.name })),
-    leaderId: () => room.leaderId ?? null,
     isConnected: (id) => !!room.byId(id)?.socketId,
     toTv: (type, data) => room.tvSocketId && io.to(room.tvSocketId).emit('msg', { type, data }),
     toPhone: (id, type, data) => {

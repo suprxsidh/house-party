@@ -50,8 +50,6 @@ export interface ServerGameContext {
   /** Seat id of the current leader, or null. */
   leaderId(): string | null;
   players(): Player[];
-  /** Current leader seat id, or null. */
-  leaderId?(): string | null;
   /** True while that seat has a live socket. */
   isConnected?(playerId: string): boolean;
   toTv(type: string, data?: unknown): void;
