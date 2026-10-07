@@ -32,7 +32,7 @@ export function buildScene(root: HTMLElement, low: boolean): PlazaScene {
   sun.position.set(30, 50, 20);
   if (!low) {
     sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.mapSize.set(1024, 1024);
     const c = sun.shadow.camera;
     c.left = -45; c.right = 45; c.top = 45; c.bottom = -45; c.near = 10; c.far = 140;
   }
@@ -149,6 +149,17 @@ export function buildScene(root: HTMLElement, low: boolean): PlazaScene {
       renderer.render(scene, camera);
     },
     dispose() {
+      const seen = new Set<{ dispose(): void }>();
+      scene.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (m.geometry) seen.add(m.geometry);
+        const mat = m.material as THREE.Material | THREE.Material[] | undefined;
+        if (mat) for (const x of Array.isArray(mat) ? mat : [mat]) seen.add(x);
+      });
+      for (const x of seen) x.dispose();
+      bodies.dispose();
+      heads.dispose();
+      sun.shadow.map?.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     },

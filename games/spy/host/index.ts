@@ -42,6 +42,7 @@ registerHost(info, (): TvGame => {
   let raf = 0;
   let meTimer: ReturnType<typeof setInterval> | undefined;
   let endTimer: ReturnType<typeof setTimeout> | undefined;
+  let readyTimer: ReturnType<typeof setInterval> | undefined;
   let onResize: (() => void) | undefined;
   let toPhone: (id: string, type: string, data?: unknown) => void = () => {};
   let toServer: (type: string, data?: unknown) => void = () => {};
@@ -73,6 +74,7 @@ registerHost(info, (): TvGame => {
   function startRound(d: Partial<RoundMsg>) {
     const ids = Array.isArray(d.playerIds) ? [...new Set(d.playerIds.filter((s): s is string => typeof s === 'string' && s.length > 0 && s.length < 40))].slice(0, MAX_PLAYERS) : [];
     if (![d.round, d.rounds, d.startsAt, d.endsAt, d.now].every((n) => typeof n === 'number' && Number.isFinite(n))) return;
+    clearInterval(readyTimer); // the server answered
     const same = round && round.n === d.round && round.startsAt === d.startsAt;
     skew = d.now! - Date.now();
     over = !!d.over;
@@ -112,7 +114,7 @@ registerHost(info, (): TvGame => {
     // Never name or mark the killer or the arrester. A kill names the victim only.
     if (d.kind === 'kill' && outIds.length) hud.feed(`${tname || 'Someone'} was stabbed`, 'kill');
     else if (d.kind === 'arrest-ok') hud.feed('An arrest was made: assassin caught!', 'arrest-ok');
-    else if (d.kind === 'arrest-wrong') hud.feed(tname ? `Wrong arrest: ${tname} is innocent` : 'Wrong arrest', 'arrest-wrong');
+    else if (d.kind === 'arrest-wrong') hud.feed('Wrong arrest: an innocent was held', 'arrest-wrong'); // no names: a name would reveal a role
   }
 
   function onEnd(d: Partial<EndMsg>) {
@@ -201,6 +203,15 @@ registerHost(info, (): TvGame => {
       root.append(hud.el);
       hud.setStatus('Waiting for the round...');
 
+      // The server sends spy:round when the game starts, before this TV has mounted, and does not
+      // resend on a TV reload. Ask for it (every 2 s until it arrives), like tilt and pictionary do.
+      const ask = () => {
+        toServer(MSG.ready);
+        log('server', MSG.ready, null);
+      };
+      ask();
+      readyTimer = setInterval(ask, 2000);
+
       onResize = () => plaza!.resize(root.clientWidth || innerWidth, root.clientHeight || innerHeight);
       addEventListener('resize', onResize);
       onResize();
@@ -275,6 +286,7 @@ registerHost(info, (): TvGame => {
       cancelAnimationFrame(raf);
       clearInterval(meTimer);
       clearTimeout(endTimer);
+      clearInterval(readyTimer);
       if (onResize) removeEventListener('resize', onResize);
       plaza?.dispose();
       hud?.el.remove();

@@ -98,10 +98,11 @@ test('browser: TV plaza with 40 walkers, move, act, result, end, fps, no stuck b
     assert.ok(!(await page.evaluate(() => document.body.innerText)).includes('ZZKILLER'));
     // A fallen walker ignores moves and cannot act.
     await inject('server', 'spy:result', { kind: 'arrest-wrong', actor: ids[2], target: ids[3], actorName: 'ZZCY', targetName: 'Dee', out: [ids[3]], alive: 2, seq: 2 });
-    assert.ok((await page.evaluate(() => (window as any).__spy.feed as string[])).includes('Wrong arrest: Dee is innocent'));
+    assert.ok((await page.evaluate(() => (window as any).__spy.feed as string[])).includes('Wrong arrest: an innocent was held'));
     assert.equal(await page.evaluate((id) => (window as any).__spy.walkers.find((w: any) => w.id === id).fallen, ids[3]), true);
     assert.equal(await page.evaluate((id) => (window as any).__spy.walkers.find((w: any) => w.id === id).fallen, ids[2]), false, 'the arrester stays up');
     assert.ok(!(await page.evaluate(() => document.body.innerText)).includes('ZZCY'));
+    assert.ok(!(await page.evaluate(() => document.body.innerText)).includes('Dee'), 'wrong arrest names nobody');
     await inject('server', 'spy:result', { kind: 'miss', actor: ids[0], target: 'bot-1', actorName: 'A', targetName: '', out: [], alive: 2, seq: 3 });
     assert.equal((await page.evaluate(() => (window as any).__spy.feed as string[])).length, 2, 'miss adds no feed line');
 
@@ -114,18 +115,18 @@ test('browser: TV plaza with 40 walkers, move, act, result, end, fps, no stuck b
     await sleep(1200);
     await page.screenshot({ path: SHOT });
 
-    // fps and stuck bots: up to 3 tries, 8 s each, bots keep walking the whole time.
+    // fps and stuck bots: 3 readings, 8 s each, median must reach 30, bots keep walking the whole time.
     const readings: number[] = [];
     let ok = false;
-    for (let i = 0; i < 3 && !ok; i++) {
+    for (let i = 0; i < 3; i++) {
       const f0 = await page.evaluate(() => (window as any).__spy.frames);
       const s0 = Date.now();
       await sleep(8000);
       const f1 = await page.evaluate(() => (window as any).__spy.frames);
       const fps = ((f1 - f0) * 1000) / (Date.now() - s0);
       readings.push(Math.round(fps * 10) / 10);
-      ok = fps >= 30;
     }
+    ok = [...readings].sort((a, b) => a - b)[1] >= 30; // median of 3
     console.log('fps readings (960x540, swiftshader):', readings.join(', '));
     assert.ok(ok, `fps readings ${readings}`);
     const stillS = await page.evaluate(() => (window as any).__spy.maxStillS as number);

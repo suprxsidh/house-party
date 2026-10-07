@@ -49,6 +49,7 @@ export const MSG = {
   round: 'spy:round', // server -> TV and phones (round start, no roles)
   drinks: 'spy:drinks', // leader phone -> server: drinks toggle
   next: 'spy:next', // TV -> server: TV finished showing the round-end screen
+  ready: 'spy:ready', // TV -> server: TV mounted (or reloaded), resend spy:round (and spy:end if between rounds)
 } as const;
 
 // ---- Payloads ----
