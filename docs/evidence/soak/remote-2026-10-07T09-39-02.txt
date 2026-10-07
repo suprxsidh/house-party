@@ -1,0 +1,24 @@
+soak remote https://house-party-2pdd.onrender.com  2026-10-07T09:40:19.198Z  total 76.3 s
+game        result  time      note
+tenyen      PASS    0.5 s     3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+tilt        PASS    63.1 s    falls 6, total points 50, results on TV+phones, TV clean
+pictionary  PASS    10.9 s    3 rounds, drawers p1,p2,p3, words igloo,giraffe,bridge, scores 250+50+250+200
+market      PASS    0.3 s     stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
+kart        SKIP    0.0 s     kart not registered on the server (Unknown game.)
+SOAK OK
+
+--- log ---
+[09:39:02.868] warming https://house-party-2pdd.onrender.com (up to 90 s)
+[09:39:03.072] healthz 200 after 201 ms: {"ok":true,"rooms":1}
+[09:39:03.356] room VPEU created
+[09:39:04.074] 10 bots joined, leader p1
+[09:39:04.074] --- tenyen ---
+[09:39:04.615] PASS tenyen: 3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+[09:39:04.687] --- tilt ---
+[09:40:07.763] PASS tilt: falls 6, total points 50, results on TV+phones, TV clean
+[09:40:07.840] --- pictionary ---
+[09:40:18.720] PASS pictionary: 3 rounds, drawers p1,p2,p3, words igloo,giraffe,bridge, scores 250+50+250+200
+[09:40:18.768] --- market ---
+[09:40:19.104] PASS market: stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
+[09:40:19.104] --- kart ---
+[09:40:19.151] kart skipped: Unknown game.

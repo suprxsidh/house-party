@@ -1,0 +1,23 @@
+soak local  2026-10-07T09:38:58.610Z  total 13.9 s
+game        result  time      note
+tenyen      PASS    0.2 s     3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+tilt        PASS    12.0 s    falls 6, total points 50, results on TV+phones, TV clean
+pictionary  PASS    1.4 s     3 rounds, drawers p1,p2,p3, words mug,skyscraper,snowman, scores 249+50+249+199
+market      PASS    0.1 s     stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
+kart        SKIP    0.0 s     games/kart not registered in games/server.registry.ts
+SOAK OK
+
+--- log ---
+[09:38:44.702] local prod-like server on http://localhost:58997
+[09:38:44.726] room RXAD created
+[09:38:44.780] 10 bots joined, leader p1
+[09:38:44.780] --- tenyen ---
+[09:38:44.964] PASS tenyen: 3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+[09:38:44.991] --- tilt ---
+[09:38:57.024] PASS tilt: falls 6, total points 50, results on TV+phones, TV clean
+[09:38:57.054] --- pictionary ---
+[09:38:58.448] PASS pictionary: 3 rounds, drawers p1,p2,p3, words mug,skyscraper,snowman, scores 249+50+249+199
+[09:38:58.475] --- market ---
+[09:38:58.605] PASS market: stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
+[09:38:58.605] --- kart ---
+[09:38:58.605] kart skipped: games/kart not registered
