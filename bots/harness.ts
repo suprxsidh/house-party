@@ -34,15 +34,19 @@ export class FakeTv {
   socket: Socket;
   state?: RoomState;
   msgs: Msg[] = [];
+  secret?: string;
   constructor(url: string) {
     FakeTv.all.add(this);
     this.socket = io(url, { transports: ['websocket'] });
     this.socket.on('room:state', (s: RoomState) => (this.state = s));
     this.socket.on('msg', (m: Msg) => this.msgs.push(m));
   }
-  async create(code?: string): Promise<TvCreateReply> {
+  /** Pass `secret` to re-attach to a live room (a TV reload keeps it in localStorage). */
+  async create(code?: string, secret?: string): Promise<TvCreateReply> {
     if (!this.socket.connected) await new Promise((r) => this.socket.once('connect', () => r(null)));
-    return this.socket.timeout(3000).emitWithAck('tv:create', { code });
+    const r: TvCreateReply = await this.socket.timeout(3000).emitWithAck('tv:create', { code, secret });
+    if (r.ok) this.secret = r.secret;
+    return r;
   }
   toPhone(playerId: string, type: string, data?: unknown) {
     this.socket.emit('to-phone', { playerId, type, data });

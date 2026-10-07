@@ -4,6 +4,7 @@ export type ErrorCode =
   | 'BAD_CODE'
   | 'ROOM_NOT_FOUND'
   | 'BAD_NAME'
+  | 'TV_AUTH'
   | 'ROOM_FULL'
   | 'NOT_LEADER'
   | 'BAD_REQUEST';
@@ -28,14 +29,14 @@ export interface RoomState {
   game: { id: string } | null;
 }
 
-export type TvCreateReply = { ok: true; code: string; state: RoomState } | Fail;
+export type TvCreateReply = { ok: true; code: string; secret: string; state: RoomState } | Fail;
 export type JoinReply =
   | { ok: true; code: string; token: string; you: { id: string; name: string }; state: RoomState }
   | Fail;
 
 // Client -> server events
-//   'tv:create'   {code?}                     ack TvCreateReply
-//   'phone:join'  {code, name, token?}        ack JoinReply
+//   'tv:create'   {code?, secret?}                  ack TvCreateReply
+//   'phone:join'  {code, name, token?, seatId?}      ack JoinReply
 //   'phone:leave' {}                          ack {ok}
 //   'leader:pick' {gameId}                    ack {ok} | Fail   (leader only)
 //   'to-tv'       {type, data}                phone -> TV

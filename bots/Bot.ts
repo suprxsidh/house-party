@@ -43,6 +43,7 @@ export class Bot {
       code,
       name: this.name,
       token: this.token,
+      seatId: this.id,
     });
     this.lastReply = reply;
     if (reply.ok) {

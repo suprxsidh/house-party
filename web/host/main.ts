@@ -89,8 +89,10 @@ socket.on('msg', (m: { from?: string; type: string; data: unknown }) => {
 });
 
 async function create() {
-  let reply: TvCreateReply = await socket.emitWithAck('tv:create', { code: code ?? undefined });
-  if (!reply.ok && reply.error === 'BAD_CODE') reply = await socket.emitWithAck('tv:create', {});
+  const secret = code ? safeGet(`hp.tvSecret.${code}`) ?? undefined : undefined;
+  let reply: TvCreateReply = await socket.emitWithAck('tv:create', { code: code ?? undefined, secret });
+  // Bad stored code, or the room belongs to another screen: start a fresh room.
+  if (!reply.ok && (reply.error === 'BAD_CODE' || reply.error === 'TV_AUTH')) reply = await socket.emitWithAck('tv:create', {});
   if (!reply.ok) {
     $('room-code').textContent = '';
     $('join-link').textContent = reply.message;
@@ -98,6 +100,7 @@ async function create() {
   }
   code = reply.code;
   safeSet(KEY, code);
+  safeSet(`hp.tvSecret.${code}`, reply.secret);
   history.replaceState(null, '', `?room=${code}`);
   $('room-code').textContent = code;
   state = reply.state;

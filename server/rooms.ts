@@ -29,6 +29,7 @@ export function cleanName(raw: unknown): string | null {
 
 export class Room {
   tvSocketId: string | null = null;
+  tvSecret = '';
   seats: Seat[] = []; // join order
   leaderId: string | null = null;
   game: { id: string } | null = null;
@@ -40,6 +41,16 @@ export class Room {
 
   nextSeatId() {
     return `p${++this.seq}`;
+  }
+  /** Re-create a seat id a phone remembers (after a restart). Null if bad or taken. */
+  claimSeatId(raw: unknown): string | null {
+    if (typeof raw !== 'string' || !/^p[1-9]\d{0,3}$/.test(raw) || this.byId(raw)) return null;
+    this.seq = Math.max(this.seq, Number(raw.slice(1)));
+    return raw;
+  }
+  /** Keep seats in seat-id order so a restart does not reshuffle the list or leader. */
+  sortSeats() {
+    this.seats.sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
   }
   byToken(token: string) {
     return this.seats.find((s) => s.token === token);

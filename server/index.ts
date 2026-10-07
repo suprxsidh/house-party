@@ -148,7 +148,8 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
       });
 
     safe<TvCreateReply>('tv:create', (payload, ack) => {
-      const wanted = isObj(payload) ? payload.code : undefined;
+      if (!isObj(payload)) return ack(fail('BAD_REQUEST', 'Bad create request.'));
+      const wanted = payload.code;
       let code: string;
       if (wanted === undefined || wanted === null || wanted === '') {
         code = makeCode((c) => rooms.has(c));
@@ -157,25 +158,31 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
         if (!c) return ack(fail('BAD_CODE', 'Room codes are 4 letters.'));
         code = c;
       }
+      if (role === 'phone') return ack(fail('TV_AUTH', 'A phone cannot act as the TV.'));
+      const secretIn = typeof payload.secret === 'string' && TOKEN_RE.test(payload.secret) ? payload.secret : undefined;
       let room = rooms.get(code);
       if (!room) {
+        // New room, or re-created after a restart. The TV's secret (if valid) is kept.
         room = new Room(code);
+        room.tvSecret = secretIn ?? makeToken();
         rooms.set(code, room);
         log('room created', code);
+      } else if (secretIn !== room.tvSecret) {
+        return ack(fail('TV_AUTH', `Room ${code} is already running on another screen.`));
       }
-      // A reload or restart: the newest TV takes over the room.
+      // A reload: the newest TV (with the secret) takes over the room.
       if (room.tvSocketId && room.tvSocketId !== socket.id) io.sockets.sockets.get(room.tvSocketId)?.disconnect(true);
       clearTimeout(room.deleteTimer);
       room.tvSocketId = socket.id;
       roomCode = code;
       role = 'tv';
       socket.join(code);
-      ack({ ok: true, code, state: room.state() });
+      ack({ ok: true, code, secret: room.tvSecret, state: room.state() });
       broadcast(room);
     });
 
     safe<JoinReply>('phone:join', (payload, ack) => {
-      if (!isObj(payload)) return ack(fail('BAD_REQUEST', 'Bad join request.'));
+      if (!isObj(payload) || role === 'tv') return ack(fail('BAD_REQUEST', 'Bad join request.'));
       const code = normaliseCode(payload.code);
       if (!code) return ack(fail('BAD_CODE', 'Room codes are 4 letters.'));
       const room = rooms.get(code);
@@ -193,8 +200,20 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
         if (!name) return ack(fail('BAD_NAME', 'Enter a name.'));
         if (room.seats.length >= MAX_PLAYERS) return ack(fail('ROOM_FULL', 'This room is full.'));
         // After a server restart the phone brings its old token back. Keep it.
-        seat = { id: room.nextSeatId(), token: tokenIn ?? makeToken(), name, socketId: null };
+        // After a restart the phone brings back its old seat id too. Keep it.
+        const id = (tokenIn && room.claimSeatId(payload.seatId)) || room.nextSeatId();
+        seat = { id, token: tokenIn ?? makeToken(), name, socketId: null };
         room.seats.push(seat);
+        room.sortSeats();
+      }
+      // This socket already held a different seat: release it.
+      if (role === 'phone' && seatId && seatId !== seat.id && roomCode) {
+        const oldRoom = rooms.get(roomCode);
+        const old = oldRoom?.byId(seatId);
+        if (oldRoom && old?.socketId === socket.id) {
+          old.socketId = null;
+          dropSeat(oldRoom, seatId);
+        }
       }
       seat.socketId = socket.id;
       roomCode = code;

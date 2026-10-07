@@ -27,12 +27,13 @@ const showError = (m: string) => ($('error').textContent = m);
 async function join(code: string, name: string): Promise<JoinReply> {
   const c = code.trim().toUpperCase();
   const token = get(`hp.seat.${c}`) ?? undefined;
-  const reply: JoinReply = await socket.timeout(5000).emitWithAck('phone:join', { code: c, name, token });
+  const reply: JoinReply = await socket.timeout(5000).emitWithAck('phone:join', { code: c, name, token, seatId: get(`hp.seatId.${c}`) ?? undefined });
   if (reply.ok) {
     clearTimeout(retry);
     target = reply.code;
     me = reply.you;
     set(`hp.seat.${reply.code}`, reply.token);
+    set(`hp.seatId.${reply.code}`, reply.you.id);
     set('hp.room', reply.code);
     set('hp.name', reply.you.name);
     document.body.dataset.seat = reply.you.id;

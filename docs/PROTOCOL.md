@@ -1,41 +1,39 @@
 # Protocol (Socket.IO)
 
-Types live in `shared/protocol.ts` and `shared/games.ts`.
+Types: `shared/protocol.ts`, `shared/games.ts`.
 
 ## Lifecycle
-1. TV emits `tv:create {code?}`. The server returns a 4-letter code. A given code re-creates or re-attaches the room.
-2. Phone emits `phone:join {code, name, token?}` (code may be lowercase). The reply holds `token` (save it) and `you.id`.
-3. Rejoin uses the token, never the name. After a server restart the phone sends its old token and keeps its seat id.
-4. The first phone leads. If the leader drops past the grace time (5 s), the next connected phone leads. `phone:leave` frees the seat at once.
-5. The server sends `room:state {code, players[{id,name,connected,leader}], leaderId, game}` to the TV and all phones on every change.
+1. TV emits `tv:create {code?, secret?}`. Reply has `code` and `secret`; the TV keeps both in localStorage. A live room needs its secret (else `TV_AUTH`). A missing room (after a restart) is re-created with the same code. Phones cannot create.
+2. Phone emits `phone:join {code, name, token?, seatId?}` (code may be lowercase). Reply has `token` and `you.id`. Rejoin uses the token, not the name. After a restart the phone sends its old `seatId` and keeps it. A second join on one socket frees the first seat.
+3. First phone leads. If the leader drops 5 s, the next connected phone leads. `phone:leave` frees the seat.
+4. `room:state {code, players[{id,name,connected,leader}], leaderId, game}` goes to TV and phones on every change.
 
-Errors reply `{ok:false, error, message}`: `BAD_CODE`, `ROOM_NOT_FOUND`, `BAD_NAME`, `ROOM_FULL`, `NOT_LEADER`, `BAD_REQUEST`.
+Errors: `{ok:false, error, message}`; `BAD_CODE ROOM_NOT_FOUND BAD_NAME ROOM_FULL NOT_LEADER TV_AUTH BAD_REQUEST`.
 
 ## Messages
-| Event | From, to | Payload |
+| Event | Route | Payload |
 |---|---|---|
-| `to-tv` | phone, TV | `{type, data}`; the TV gets `msg {from, type, data}` |
-| `to-phone` | TV, one phone | `{playerId, type, data}`; phone gets `msg {type, data}` |
-| `to-phones` | TV, all phones | `{type, data}` |
-| `to-server` | phone or TV, game server part | `{type, data}` |
+| `to-tv` | phone to TV | `{type,data}`; TV gets `msg {from,type,data}` |
+| `to-phone` | TV to one phone | `{playerId,type,data}`; phone gets `msg {type,data}` |
+| `to-phones` | TV to all phones | `{type,data}` |
+| `to-server` | phone or TV to server part | `{type,data}` |
 
-Names are plain text. Render with `textContent`.
+Names are plain text. Use `textContent`.
 
-## Game start and end
-- Leader emits `leader:pick {gameId}`. The server starts the server part, then `room:state.game = {id}`. TV and phones mount their parts.
-- Leader emits `leader:end`. `room:state.game` becomes `null`.
+## Games
+`leader:pick {gameId}` starts a game: `room:state.game = {id}`. `leader:end` sets it to `null`.
 
-## Adding a game
-Make `games/<name>/{host,phone,server}/index.ts`. Each calls `registerHost`, `registerPhone`, `registerServer` (`shared/registry.ts`) with the same `GameInfo`. Add one import line to each of `games/host.registry.ts`, `phone.registry.ts`, `server.registry.ts`. See `games/stub`.
+Add `games/<name>/{host,phone,server}/index.ts`, plus one import line in each `games/*.registry.ts`. See `games/stub`.
 
-Server part (`ServerGame`): `onStart(ctx)`, `onPhoneMessage(playerId,type,data)`, optional `onTvMessage`, `onPlayerConnected(playerId)` (phone rejoined; resend its state), `onEnd`. `ctx` has `players()`, `toTv`, `toPhone`, `toPhones`. Secrets stay here.
+- `registerHost(info, () => TvGame)`. `TvGame`: `mount(ctx)`, `onPhoneMessage(playerId,type,data)`, `destroy()`. `ctx.root` is the `#game` element on the TV. Also `players()`, `toPhone`, `toPhones`, `toServer`.
+- `registerPhone(info, () => PhoneGame)`. `PhoneGame`: `mount(ctx)`, `onMessage(type,data)`, `destroy()`. `ctx.root` is `#game-root` on the phone. Also `me`, `toTv`, `toServer`. Pages re-mount after a reload.
+- `registerServer(info, () => ServerGame)`. Every game must call it, even with no server part: `registerServer(info)`. `ServerGame`: `onStart(ctx)`, `onPhoneMessage(playerId,type,data)`, optional `onTvMessage`, `onPlayerConnected(playerId)` (resend that phone's state), `onEnd`. `ctx`: `players()`, `toTv`, `toPhone`, `toPhones`. Secrets stay here.
+- `to-server` data is untrusted. Validate type, range and sender.
 
-## bots/ helper API (`bots/harness.ts`)
-- `setupRoom(n)` gives `{srv, tv, code, bots, send, sendServer, waitFor, start, close}`. Bot 0 is the leader.
-- `r.send(i, type, data)`: bot i to TV. `r.sendServer(i, ...)`: bot i to server part.
-- `r.waitFor(i, type)`: wait for bot i to get a message.
-- `r.tv.waitFor(type, {from})`; `r.tv.msgs` lists all TV messages (assert on it).
-- `r.start('gameId')`: leader picks the game. `await r.close()` at the end.
-- `srv.wipe()` acts like a server restart.
+## bots/ helpers (`bots/harness.ts`)
+- `setupRoom(n)` gives `{srv, tv, code, bots, send, sendServer, waitFor, start, close}`. Bot 0 leads.
+- `send(i,type,data)` bot to TV; `sendServer(i,...)` bot to server part; `waitFor(i,type)` bot receives.
+- `tv.waitFor(type,{from})`; `tv.msgs` lists TV messages.
+- `start('id')` picks the game. `srv.wipe()` acts like a restart; re-create with `tv.create(code, tv.secret)`.
 
-Tests: `games/<name>/test/*.test.ts`. Run one with `npm test -- <name>`.
+Run one game: `npm test -- <name>` (`games/<name>/test/*.test.ts`).

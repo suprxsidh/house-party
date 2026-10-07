@@ -129,14 +129,14 @@ test('review 4: TV reload keeps room code; wiped server re-creates it; phones re
   const ids = bots.map((b) => b.id);
   tv.close(); // TV reload
   const tv2 = new FakeTv(srv.url);
-  const again = await tv2.create(made.code);
+  const again = await tv2.create(made.code, tv.secret);
   assert.ok(again.ok && again.code === made.code);
   assert.deepEqual(again.ok && again.state.players.map((p) => p.id), ids, 'players kept on reload');
   // server restart: rooms wiped
   srv.wipe(); // phones and TV are dropped; they reconnect by themselves
   tv2.close();
   const tv3 = new FakeTv(srv.url);
-  const re = await tv3.create(made.code.toLowerCase());
+  const re = await tv3.create(made.code.toLowerCase(), tv.secret);
   assert.ok(re.ok && re.code === made.code, 'same code re-created');
   assert.equal(re.ok && re.state.players.length, 0);
   // phones that notice a reconnect rejoin on their own
@@ -163,4 +163,60 @@ test('review 5: HTML names stay plain text on the wire', async () => {
   const long = await new Bot(srv.url, 'x'.repeat(200)).join(made.code);
   assert.ok(long.ok && long.you.name.length <= 30);
   [tv, a].forEach((x) => x.close());
+});
+
+test('security: a phone cannot kick or hijack the TV', async () => {
+  const tv = new FakeTv(srv.url);
+  const made = await tv.create();
+  assert.ok(made.ok && made.secret);
+  const [a] = await joinBots(srv.url, made.code, 1, 'S');
+  // phone socket tries tv:create for the live room
+  const r1 = await a.socket.timeout(2000).emitWithAck('tv:create', { code: made.code });
+  assert.equal(r1.ok, false);
+  // a stranger socket with no or wrong secret
+  const evil = new FakeTv(srv.url);
+  assert.equal((await evil.create(made.code)).ok, false);
+  assert.equal((await evil.create(made.code, 'x'.repeat(32))).ok, false);
+  await sleep(200);
+  assert.equal(tv.socket.connected, true, 'TV was not kicked');
+  a.sendToTv('still', 1);
+  await tv.waitFor('still');
+  // right secret still re-attaches (TV reload)
+  const tv2 = new FakeTv(srv.url);
+  assert.equal((await tv2.create(made.code, made.secret)).ok, true);
+  // a TV socket cannot join as a phone
+  const r2 = await tv2.socket.timeout(2000).emitWithAck('phone:join', { code: made.code, name: 'x' });
+  assert.equal(r2.ok, false);
+});
+
+test('seat ids survive a wipe, even when phones rejoin in reverse order', async () => {
+  const tv = new FakeTv(srv.url);
+  const made = await tv.create();
+  assert.ok(made.ok);
+  const bots = await joinBots(srv.url, made.code, 3, 'W');
+  const ids = bots.map((b) => b.id);
+  bots.forEach((b) => b.socket.disconnect()); // hold them offline, then wipe
+  srv.wipe();
+  tv.close();
+  const tv2 = new FakeTv(srv.url);
+  assert.ok((await tv2.create(made.code, made.secret)).ok);
+  for (const b of [...bots].reverse()) {
+    b.socket.connect();
+    await until(() => tv2.state?.players.some((p) => p.id === b.id) ?? false, 3000, `${b.name} back`);
+  }
+  assert.deepEqual(tv2.state!.players.map((p) => p.id), ids, 'ids and order unchanged');
+  assert.deepEqual(bots.map((b) => b.id), ids);
+});
+
+test('one socket joining twice releases its old seat', async () => {
+  const tv = new FakeTv(srv.url);
+  const made = await tv.create();
+  assert.ok(made.ok);
+  const a = new Bot(srv.url, 'Twice');
+  await a.join(made.code);
+  const first = a.id;
+  const r = await a.socket.timeout(2000).emitWithAck('phone:join', { code: made.code, name: 'Other' });
+  assert.ok(r.ok && r.you.id !== first);
+  await until(() => tv.state?.players.length === 1, 2000, 'old seat gone');
+  assert.equal(tv.state!.players[0].name, 'Other');
 });
