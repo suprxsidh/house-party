@@ -5,6 +5,8 @@ export interface GameInfo {
   id: string;
   name: string;
   blurb: string;
+  /** Always-on side layer: auto-starts with the room, never picked, never blocks a game. */
+  layer?: boolean;
 }
 
 export interface Player {
@@ -30,17 +32,23 @@ export interface TvGame {
 export interface PhoneGameContext {
   root: HTMLElement;
   me: Player;
+  /** True while this phone holds the room lead. */
+  isLeader(): boolean;
   toTv(type: string, data?: unknown): void;
   toServer(type: string, data?: unknown): void;
 }
 export interface PhoneGame {
   mount(ctx: PhoneGameContext): void;
   onMessage(type: string, data: unknown): void;
+  /** Room state changed (leader, players). Optional. */
+  onRoomState?(): void;
   destroy(): void;
 }
 
 /** Optional server side: for games with secrets (votes, goals, words). */
 export interface ServerGameContext {
+  /** Seat id of the current leader, or null. */
+  leaderId(): string | null;
   players(): Player[];
   toTv(type: string, data?: unknown): void;
   toPhone(playerId: string, type: string, data?: unknown): void;
@@ -52,5 +60,7 @@ export interface ServerGame {
   onTvMessage?(type: string, data: unknown): void;
   /** A phone (re)joined mid-game: send it the state it needs. */
   onPlayerConnected?(playerId: string): void;
+  /** A TV (re)attached to the room: resend its state. */
+  onTvConnected?(): void;
   onEnd?(): void;
 }

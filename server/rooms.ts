@@ -34,6 +34,8 @@ export class Room {
   leaderId: string | null = null;
   game: { id: string } | null = null;
   serverGame?: ServerGame;
+  /** Always-on layers (info.layer), keyed by game id. */
+  layers = new Map<string, ServerGame>();
   private seq = 0;
   deleteTimer?: NodeJS.Timeout;
 

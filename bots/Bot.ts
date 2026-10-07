@@ -12,6 +12,8 @@ export class Bot {
   id?: string;
   state?: RoomState;
   msgs: { type: string; data: unknown }[] = [];
+  /** Messages from always-on layers (type like "market:state"). Kept apart so game tests can count `msgs`. */
+  layerMsgs: { type: string; data: unknown }[] = [];
   lastReply?: JoinReply;
   private wantRoom?: string;
   private retry?: NodeJS.Timeout;
@@ -23,7 +25,7 @@ export class Bot {
     Bot.all.add(this);
     this.socket = io(url, { transports: ['websocket'], reconnectionDelay: 100, reconnectionDelayMax: 300 });
     this.socket.on('room:state', (s: RoomState) => (this.state = s));
-    this.socket.on('msg', (m: { type: string; data: unknown }) => this.msgs.push(m));
+    this.socket.on('msg', (m: { type: string; data: unknown }) => (/^[a-z]+:/.test(m.type) ? this.layerMsgs : this.msgs).push(m));
     // On every (re)connect, rejoin by token.
     this.socket.on('connect', () => {
       if (this.wantRoom) void this.join(this.wantRoom);
