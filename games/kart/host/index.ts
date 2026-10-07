@@ -12,6 +12,9 @@ interface PartyApi {
   snapshot(): { phase: RaceMsg['phase']; raceTime: number; laps: number; rows: (RaceMsg['rows'][number] & { kart: number })[] };
 }
 
+// The platform rewrites the URL to ?room=CODE once the room exists, so read test/quality flags now, at load.
+const ORIGINAL_SEARCH = location.search;
+
 // TV side. The race runs in an iframe (/kart/) so the kart code keeps its own page,
 // renderer and globals. This file feeds it phone input and reports back to phones.
 registerHost(info, (): TvGame => {
@@ -48,7 +51,7 @@ registerHost(info, (): TvGame => {
         .map((p) => ({ seat: p.id, name: p.name }));
       const karts = Math.min(MAX_KARTS, Math.max(MIN_KARTS, roster.length));
 
-      const q = new URLSearchParams(location.search);
+      const q = new URLSearchParams(ORIGINAL_SEARCH);
       const pass = new URLSearchParams({ party: '1', karts: String(karts) });
       for (const k of ['quality', 'scale', 'laps', 'renderevery']) if (q.get(k)) pass.set(k, q.get(k)!);
 
