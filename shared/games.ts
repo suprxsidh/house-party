@@ -42,6 +42,10 @@ export interface PhoneGame {
 /** Optional server side: for games with secrets (votes, goals, words). */
 export interface ServerGameContext {
   players(): Player[];
+  /** Current leader seat id, or null. */
+  leaderId?(): string | null;
+  /** True while that seat has a live socket. */
+  isConnected?(playerId: string): boolean;
   toTv(type: string, data?: unknown): void;
   toPhone(playerId: string, type: string, data?: unknown): void;
   toPhones(type: string, data?: unknown): void;
