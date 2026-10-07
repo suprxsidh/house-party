@@ -75,7 +75,8 @@ registerHost(info, (): TvGame => {
       root.append(bets, top);
       root.dataset.empty = '';
     },
-    onPhoneMessage(_from, type, data) {
+    onPhoneMessage(from, type, data) {
+      if (from !== 'server') return; // phones cannot spoof the board
       if (type === 'market:state') render(data as View);
     },
     destroy() {
