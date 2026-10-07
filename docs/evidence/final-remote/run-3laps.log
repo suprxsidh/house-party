@@ -1,0 +1,32 @@
+2026-10-07T15:54:43.999Z TV SOCK room:state game=null
+2026-10-07T15:54:44.185Z TV SOCK room:state game=null
+2026-10-07T15:54:44.238Z TV SOCK room:state game=null
+2026-10-07T15:54:44.289Z TV SOCK room:state game=null
+2026-10-07T15:54:44.337Z TV SOCK room:state game=null
+2026-10-07T15:54:44.393Z TV SOCK room:state game=null
+2026-10-07T15:54:44.450Z TV SOCK room:state game=null
+2026-10-07T15:54:44.501Z TV SOCK room:state game=null
+2026-10-07T15:54:44.551Z TV SOCK room:state game=null
+2026-10-07T15:54:44.614Z TV SOCK room:state game=null
+2026-10-07T15:54:44.615Z room DWZL: 10 bots joined
+2026-10-07T15:54:44.678Z TV SOCK room:state game=kart
+2026-10-07T15:55:33.188Z TV SOCK disconnect transport close
+2026-10-07T15:55:33.543Z kart page up: 10 karts, phase countdown, laps 3
+2026-10-07T15:55:34.537Z TV SOCK connect
+2026-10-07T15:55:35.274Z TV SOCK room:state game=kart
+2026-10-07T15:55:44.271Z phase countdown t=0s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 0
+2026-10-07T15:56:08.169Z phase racing t=12.03s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T15:56:23.187Z phase racing t=29.35s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T15:56:38.190Z phase racing t=44.35s laps(done) 0,0,0,0,0,0,0,0,0,0 finished 0/10 remote 10
+2026-10-07T15:56:53.254Z phase racing t=59.41s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T15:57:08.292Z phase racing t=74.45s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T15:57:23.360Z phase racing t=89.51s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T15:57:38.422Z phase racing t=104.58s laps(done) 1,1,1,1,1,1,1,1,1,1 finished 0/10 remote 10
+2026-10-07T15:57:53.482Z phase racing t=119.65s laps(done) 2,2,2,2,2,2,2,2,2,2 finished 0/10 remote 10
+2026-10-07T15:58:08.525Z phase racing t=134.68s laps(done) 2,2,2,2,2,2,2,2,2,2 finished 0/10 remote 10
+2026-10-07T15:58:23.559Z phase racing t=149.71s laps(done) 2,2,2,2,2,2,2,2,2,2 finished 0/10 remote 10
+2026-10-07T15:58:37.684Z final phase results t=163.81s after 173s wall, 19490 inputs sent
+2026-10-07T15:58:37.684Z lap counts per kart: Bot1:3F Bot2:3F Bot3:3F Bot4:3F Bot5:3F Bot6:3F Bot7:3F Bot8:3F Bot9:3F Bot10:3F
+2026-10-07T15:58:47.812Z results on all 10 phones: 1.Bot4 2.Bot5 3.Bot1 4.Bot6 5.Bot9 6.Bot2 7.Bot8 8.Bot7 9.Bot10 10.Bot3
+2026-10-07T15:58:47.953Z TV SOCK room:state game=null
+2026-10-07T15:58:47.982Z PASS

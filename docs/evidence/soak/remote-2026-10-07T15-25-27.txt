@@ -1,0 +1,21 @@
+soak remote https://house-party-2pdd.onrender.com  2026-10-07T15:26:44.268Z  total 77.1 s
+game        result  time      note
+tenyen      PASS    0.6 s     3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+tilt        PASS    63.1 s    falls 6, total points 50, results on TV+phones, TV clean
+pictionary  PASS    11.1 s    3 rounds, drawers p1,p2,p3, words snowman,tree,flower, scores 250+50+250+200
+market      PASS    0.5 s     stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
+SOAK OK
+
+--- log ---
+[15:25:27.187] warming https://house-party-2pdd.onrender.com (up to 90 s)
+[15:25:27.346] healthz 200 after 156 ms: {"ok":true,"rooms":1}
+[15:25:27.679] room LQNF created
+[15:25:28.733] 10 bots joined, leader p1
+[15:25:28.734] --- tenyen ---
+[15:25:29.380] PASS tenyen: 3 rounds ok (6-4, 5-5 tie, 9-1); 35 TV state msgs clean
+[15:25:29.454] --- tilt ---
+[15:26:32.539] PASS tilt: falls 6, total points 50, results on TV+phones, TV clean
+[15:26:32.617] --- pictionary ---
+[15:26:43.679] PASS pictionary: 3 rounds, drawers p1,p2,p3, words snowman,tree,flower, scores 250+50+250+200
+[15:26:43.764] --- market ---
+[15:26:44.264] PASS market: stake 1000, pools yes 1683 / no 478, chips after resolve 10000 = 10 x 1000
