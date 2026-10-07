@@ -8,7 +8,7 @@ import { Bot, joinBots } from '../../../bots/Bot.ts';
 import type { RunningServer } from '../../../server/index.ts';
 import { Pilot, snapshot, type Snap } from './pilot.ts';
 
-const OUT = 'docs/evidence/task2';
+const OUT = process.env.HP_REMOTE_URL ? 'docs/evidence/final-remote' : 'docs/evidence/task2';
 const LAPS = Number(process.env.KART_LAPS ?? 3);
 const BUDGET_MS = Number(process.env.KART_BUDGET_MS ?? 20 * 60_000);
 let srv: RunningServer;
@@ -27,7 +27,9 @@ const log = (s: string) => { const l = `${new Date().toISOString()} ${s}`; lines
 
 before(async () => {
   fs.mkdirSync(OUT, { recursive: true });
-  srv = await boot();
+  srv = process.env.HP_REMOTE_URL
+    ? ({ url: process.env.HP_REMOTE_URL, close: async () => {} } as unknown as RunningServer)
+    : await boot();
   browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 });
 after(async () => {

@@ -1,0 +1,12 @@
+soak remote https://house-party-2pdd.onrender.com  2026-10-07T15:23:36.423Z  total 2.3 s
+game        result  time      note
+kart        PASS    0.1 s     STUB: picked, room game = kart (no gameplay asserts yet)
+SOAK OK
+
+--- log ---
+[15:23:34.105] warming https://house-party-2pdd.onrender.com (up to 90 s)
+[15:23:34.859] healthz 200 after 747 ms: {"ok":true,"rooms":0}
+[15:23:35.301] room TPND created
+[15:23:36.144] 10 bots joined, leader p1
+[15:23:36.144] --- kart ---
+[15:23:36.235] PASS kart: STUB: picked, room game = kart (no gameplay asserts yet)

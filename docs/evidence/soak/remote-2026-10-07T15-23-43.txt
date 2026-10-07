@@ -1,0 +1,13 @@
+soak remote https://house-party-2pdd.onrender.com  2026-10-07T15:23:48.257Z  total 4.3 s
+game        result  time      note
+(setup)     FAIL    4.3 s     operation has timed out
+SOAK FAILED (1)
+
+--- log ---
+[15:23:43.984] warming https://house-party-2pdd.onrender.com (up to 90 s)
+[15:23:44.318] healthz 200 after 327 ms: {"ok":true,"rooms":1}
+[15:23:44.719] room ZKHG created
+[15:23:48.253] SETUP FAIL: Error: operation has timed out
+    at Timeout._onTimeout (file:///Users/Suprasidh/coding-projects/house-party/node_modules/socket.io-client/build/esm-debug/socket.js:300:28)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
