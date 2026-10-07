@@ -3,3 +3,4 @@ import './stub/server/index.ts';
 import './tenyen/server/index.ts';
 import './market/server/index.ts';
 import './tilt/server/index.ts';
+import './pictionary/server/index.ts';

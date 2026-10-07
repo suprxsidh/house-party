@@ -1,0 +1,4 @@
+// Built-in word list. Gemini drafted it; pruned by hand for block-drawability and family-friendliness.
+export const WORDS: string[] = [
+  "house", "castle", "tower", "pyramid", "lighthouse", "bridge", "igloo", "barn", "windmill", "tent", "skyscraper", "doghouse", "car", "truck", "train", "rocket", "boat", "submarine", "bus", "tractor", "airplane", "helicopter", "sailboat", "table", "chair", "bed", "couch", "bookshelf", "stool", "lamp", "desk", "wardrobe", "bench", "tree", "flower", "snowman", "mushroom", "cactus", "volcano", "mountain", "sun", "cloud", "palm tree", "campfire", "apple", "ice cream", "cake", "burger", "pizza", "lollipop", "donut", "watermelon", "carrot", "cupcake", "banana", "cookie", "duck", "pig", "snake", "giraffe", "elephant", "penguin", "turtle", "caterpillar", "fish", "teddy bear", "cat", "dog", "frog", "dice", "pencil", "cup", "mug", "crown", "clock", "robot", "hammer", "umbrella", "balloon", "bucket", "hat", "teapot"
+];
