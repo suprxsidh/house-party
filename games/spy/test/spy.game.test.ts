@@ -268,3 +268,17 @@ test('timer ends the round with alive bonuses; TV reload gets round and end agai
     await r.close();
   }
 });
+
+test('spy:ready from the TV resends the round (TV mounted after leader:pick)', async () => {
+  const { r } = await play(4);
+  try {
+    const before = tvOf(r, 'spy:round').length;
+    r.tv.toServer('spy:ready', {});
+    await until(() => tvOf(r, 'spy:round').length === before + 1, 2000, 'round resent');
+    for (const i of [0, 1]) r.sendServer(i, 'spy:ready', {}); // phones may not trigger it
+    await sleep(200);
+    assert.equal(tvOf(r, 'spy:round').length, before + 1);
+  } finally {
+    await r.close();
+  }
+});

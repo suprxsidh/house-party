@@ -127,6 +127,11 @@ registerServer(info, (): ServerGame => {
     onTvMessage(type, data) {
       if (type === MSG.act) onAct(data);
       else if (type === MSG.next && ended && !matchOver) startRound();
+      else if (type === MSG.ready) {
+        // TV mounted after leader:pick (or reloaded): resend what it missed.
+        sendRound();
+        if (ended && lastEnd) ctx.toTv(MSG.end, lastEnd);
+      }
     },
     onPlayerConnected(playerId) {
       sendRound(playerId);
