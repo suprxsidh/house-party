@@ -5,3 +5,4 @@ import './market/server/index.ts';
 import './tilt/server/index.ts';
 import './pictionary/server/index.ts';
 import './kart/server/index.ts';
+import './spy/server/index.ts';

@@ -59,7 +59,7 @@ export interface MoveMsg { x: number; y: number }
 /** phone -> TV. Empty: the press only. */
 export type ActPress = Record<string, never>;
 /** TV -> server. actor is a player id. target is a player id or a bot id ("bot-N"). */
-export interface ActMsg { actor: string; target: string }
+export interface ActMsg { actor: string; target: string; dist?: number } // dist (metres, optional): server treats a stab over STAB_RANGE or an arrest over ARREST_RANGE as a miss
 
 export type ResultKind = 'kill' | 'arrest-ok' | 'arrest-wrong' | 'miss';
 /** server -> TV. `out` lists ids that are out because of this event (kill: target. arrest-ok: target. arrest-wrong: actor). */
