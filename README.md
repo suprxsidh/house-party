@@ -2,6 +2,7 @@
 
 A web party platform. A TV laptop shows a QR code. Friends scan it and their phones become controllers.
 
+- Live: https://house-party-2pdd.onrender.com (free tier sleeps after 15 min; open it 2 min early).
 - `npm run dev` starts one server with Vite on http://localhost:3000. Open `/host` on the TV and `/play` on phones.
 - `npm run build`, then `npm start`, serves the production build.
 - `npm test` runs the bot tests. `npm test -- <game>` runs one game. `npm run bots` runs the 10-bot browser check.

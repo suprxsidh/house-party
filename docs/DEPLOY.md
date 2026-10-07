@@ -11,3 +11,5 @@ Suprasidh does this once.
 7. Test it: `npm run smoke -- https://<name>.onrender.com`.
 
 Free services sleep after 15 minutes idle. The first load takes about 50 seconds.
+
+Live URL: https://house-party-2pdd.onrender.com
