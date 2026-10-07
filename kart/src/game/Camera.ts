@@ -717,6 +717,9 @@ export class ChaseCamera implements System {
     const k = ctx.race?.player;
     if (!k || !this.sampleFn) return;
     dt = clamp(dt, 1 / 480, 0.1);
+    // House Party: the high pack camera (src/party/pack.ts) owns the lens in party mode.
+    const pack = (ctx as any).packCam as ((c: Ctx, d: number) => void) | undefined;
+    if (pack) { pack(ctx, dt); return; }
 
     const mode: CamMode = ((window as any).__camMode as CamMode) || 'chase';
     const state = ctx.race.state;

@@ -37,6 +37,7 @@ import { Kart } from '../kart/Kart';
 import { AIField, type DriveCmd } from './AI';
 import { Items } from './Items';
 import { partyKartCount, partyLaps, type RemoteDriver } from '../party/remote';
+import { catchUpBonus } from '../party/framing';
 
 const ROSTER: KartStats[] = [
   { name: 'Vela',   color: new THREE.Color(0xff3b5c), accelMul: 1.00, topSpeedMul: 1.00, weightMul: 1.0,  handlingMul: 1.00 },
@@ -111,6 +112,8 @@ interface Progress {
 }
 
 const _v = new THREE.Vector3();
+/** House Party catch-up: forward push at the full +25% bonus, m/s^2 (scaled by the bonus fraction). */
+const CATCHUP_ACCEL = 48;
 const _drop = new THREE.Vector3();
 
 function clamp(v: number, lo: number, hi: number) {
@@ -472,6 +475,9 @@ export class Race implements IRace {
     // on whoever leads.
     if (this.remote && this.standings.length) this.player = this.standings[0] as Kart;
     this.ai.beginFrame(this.karts, this.player, dt);
+    // party catch-up: gap to the front-most kart still racing (the leader's own gap is 0)
+    let partyLead = -Infinity;
+    if (this.remote) for (const k of this.karts) if (!k.finished && k.raceDistance > partyLead) partyLead = k.raceDistance;
 
     for (let i = 0; i < this.karts.length; i++) {
       const k = this.karts[i];
@@ -551,7 +557,17 @@ export class Race implements IRace {
 
       // Rubber band, applied as a slipstream-scale acceleration rather than as
       // a boost — it must never light up the exhausts or read as a cheat.
-      if (live && !k.isPlayer && !rc && !(this.remote?.owns(k)) && !k.finished && k.stunTime <= 0 && !k.airborne) {
+      if (this.remote) {
+        // party mode: every kart gets catch-up that grows with its gap to the leader (up to +25% top
+        // speed, the leader none). Same forward-launch assist as the AI rubber band below, plus a
+        // higher speed ceiling, because the ceiling would cancel a plain launch.
+        const bonus = live && !k.finished ? catchUpBonus(partyLead - k.raceDistance) : 0;
+        k.catchUp = bonus;
+        if (bonus > 0 && k.stunTime <= 0 && !k.airborne && k.forwardSpeed > 4) {
+          _v.copy(k.forward).multiplyScalar(bonus * CATCHUP_ACCEL * dt);
+          k.launch(_v);
+        }
+      } else if (live && !k.isPlayer && !rc && !(this.remote?.owns(k)) && !k.finished && k.stunTime <= 0 && !k.airborne) {
         const a = this.ai.assistFor(k);
         if (a !== 0 && k.forwardSpeed > 4) {
           _v.copy(k.forward).multiplyScalar(a * dt);
