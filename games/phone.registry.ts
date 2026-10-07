@@ -5,3 +5,4 @@ import './market/phone/index.ts';
 import './tilt/phone/index.ts';
 import './pictionary/phone/index.ts';
 import './kart/phone/index.ts';
+import './spy/phone/index.ts';
