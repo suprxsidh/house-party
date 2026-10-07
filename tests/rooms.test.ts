@@ -220,3 +220,35 @@ test('one socket joining twice releases its old seat', async () => {
   await until(() => tv.state?.players.length === 1 && tv.state.players[0].name === 'Other', 5000, 'old seat gone');
   assert.equal(tv.state!.players[0].name, 'Other');
 });
+
+test('TV drops mid-game and reconnects with its secret: the game id survives', async () => {
+  const tv = new FakeTv(srv.url);
+  const made = await tv.create();
+  assert.ok(made.ok);
+  const bots = await joinBots(srv.url, made.code, 2, 'D');
+  assert.equal((await bots[0].socket.timeout(2000).emitWithAck('leader:pick', { gameId: 'stub' })).ok, true);
+  await until(() => tv.state?.game?.id === 'stub', 3000, 'game on TV');
+  tv.socket.io.engine.close(); // network drop; the client reconnects by itself
+  await until(() => !tv.socket.connected, 3000, 'TV dropped');
+  await until(() => tv.socket.connected, 5000, 'TV reconnected');
+  const again = await tv.create(made.code, tv.secret);
+  assert.ok(again.ok);
+  assert.equal(again.ok && again.state.game?.id, 'stub', 'game kept after TV reconnect');
+  [tv, ...bots].forEach((x) => x.close());
+});
+
+test('a TV tab that misses pongs for 16 s stays connected (CPU starvation while the kart bundle boots)', { timeout: 60_000 }, async () => {
+  const tv = new FakeTv(srv.url);
+  const made = await tv.create();
+  assert.ok(made.ok);
+  let disconnects = 0;
+  tv.socket.on('disconnect', () => disconnects++);
+  const eng = tv.socket.io.engine as unknown as { _sendPacket: (t: string, ...a: unknown[]) => void };
+  const send = eng._sendPacket.bind(eng);
+  let mute = true;
+  eng._sendPacket = (t, ...a) => (t === 'pong' && mute ? undefined : send(t, ...a));
+  await sleep(16_000);
+  mute = false;
+  assert.equal(disconnects, 0, 'server did not drop a TV that was silent for 16 s');
+  tv.close();
+});

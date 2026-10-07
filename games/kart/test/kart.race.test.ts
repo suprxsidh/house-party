@@ -43,9 +43,13 @@ test(`proof: 10 bots drive ${LAPS} laps in the TV page, race finishes, results r
   const ctx = await browser.newContext({ viewport: { width: 800, height: 450 } });
   const page = await ctx.newPage();
   page.on('pageerror', (e) => log(`PAGE ERROR ${e.message}`));
-  page.on('console', (m) => m.type() === 'error' && log(`CONSOLE ERROR ${m.text().slice(0, 160)}`));
+  page.on('console', (m) => (m.type() === 'error' || m.text().startsWith('SOCK ')) && log(`${m.type() === 'error' ? 'CONSOLE ERROR' : 'TV'} ${m.text().slice(0, 160)}`));
   await page.goto(`${srv.url}/host?quality=low&scale=0.4&laps=${LAPS}&renderevery=${process.env.KART_RENDER_EVERY ?? 100000}`);
   await page.waitForSelector('#room-code:not(:empty)');
+  // Evidence: log the TV socket (connect, disconnect reason, game id) so a drop shows in the run log.
+  await page.evaluate(`(() => { const s = window.__hp.socket; const l = (m) => console.log('SOCK ' + m);
+    s.on('connect', () => l('connect')); s.on('disconnect', (r) => l('disconnect ' + r));
+    s.on('room:state', (st) => l('room:state game=' + (st.game && st.game.id || null))); })()`);
   const code = (await page.textContent('#room-code'))!.trim();
   const bots = await joinBots(srv.url, code, 10, 'Bot');
   await page.waitForFunction(() => document.querySelectorAll('#players li').length === 10);

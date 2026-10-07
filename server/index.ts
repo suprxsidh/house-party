@@ -15,6 +15,7 @@ export interface ServerOptions {
   mode?: 'dev' | 'prod';
   leaderGraceMs?: number;
   tvGraceMs?: number; // how long an empty-TV room survives
+  pingTimeoutMs?: number; // how long a silent socket lives (default 20 s: a CPU-starved TV tab misses pongs)
   quiet?: boolean;
 }
 export interface RunningServer {
@@ -41,10 +42,10 @@ export async function startServer(opts: ServerOptions = {}): Promise<RunningServ
 
   const app = express();
   const httpServer = http.createServer(app);
-  const io = new Server(httpServer, { pingInterval: 5000, pingTimeout: 8000 });
+  const io = new Server(httpServer, { pingInterval: 5000, pingTimeout: opts.pingTimeoutMs ?? 20_000 });
   const rooms = new Map<string, Room>();
 
-  app.get('/healthz', (_req, res) => res.json({ ok: true, rooms: rooms.size }));
+  app.get('/healthz', (_req, res) => res.json({ ok: true, rooms: rooms.size, commit: process.env.RENDER_GIT_COMMIT?.slice(0, 7) }));
   app.get('/', (_req, res) => res.redirect('/host'));
 
   let vite: import('vite').ViteDevServer | undefined;
