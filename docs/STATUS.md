@@ -17,3 +17,4 @@
 - Step 0 done: games/spy/types.ts + info.ts on main (877033b), not pushed. Freeze: push last 2026-10-08 18:00 IST.
 - Worktrees made by hand (Agent isolation needs a git cwd): ../house-party-wt/spy-s1, spy-s2, spy-s3. Builders S1 (rules+server), S2 (TV), S3 (phone) running in parallel. Token spend so far: about 40k (orchestrator only).
 - Contract note: ActMsg gets optional `dist` (S2 adds) so the server enforces stab range 1.5 m without the TV knowing roles.
+- 2026-10-07 ~23:00 IST: S1, S2, S3 reviewed PASS and merged to main (not pushed). Orchestrator added spy:ready handler (TV mounts after leader:pick; found by S2 reviewer) + test; spy tests 31/31, tsc clean. S2 fps (software GL, 40 walkers): 41-42 fps after shadow-map cut. S4a (10-bot browser test + soak scenario) running in ../house-party-wt/spy-s4. Spend so far about 560k tokens (est).
