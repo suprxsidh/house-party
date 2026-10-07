@@ -217,6 +217,6 @@ test('one socket joining twice releases its old seat', async () => {
   const first = a.id;
   const r = await a.socket.timeout(2000).emitWithAck('phone:join', { code: made.code, name: 'Other' });
   assert.ok(r.ok && r.you.id !== first);
-  await until(() => tv.state?.players.length === 1, 2000, 'old seat gone');
+  await until(() => tv.state?.players.length === 1 && tv.state.players[0].name === 'Other', 5000, 'old seat gone');
   assert.equal(tv.state!.players[0].name, 'Other');
 });
