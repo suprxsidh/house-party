@@ -1,0 +1,32 @@
+:root { --bg:#0f1220; --fg:#f2f4ff; --dim:#9aa3c7; --accent:#ffcf5a; --card:#1a1f36; --bad:#ff6b6b; --ok:#5be39a; }
+* { box-sizing: border-box; }
+html, body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+button { font:inherit; border:0; border-radius:12px; padding:.8em 1.2em; background:var(--accent); color:#1b1500; font-weight:700; cursor:pointer; }
+button.ghost { background:var(--card); color:var(--fg); }
+input { font:inherit; width:100%; padding:.8em 1em; border-radius:12px; border:2px solid #343b63; background:var(--card); color:var(--fg); }
+.error { color:var(--bad); min-height:1.4em; margin:.5em 0; }
+[hidden] { display:none !important; }
+/* TV */
+.tv { min-height:100vh; padding:3vmin; display:grid; grid-template-columns: 1fr 1.2fr; gap:4vmin; align-items:start; }
+.tv h1 { margin:0 0 2vmin; letter-spacing:.08em; }
+.tv .code-label { color:var(--dim); font-size:2.2vmin; }
+.tv #room-code { font-size:14vmin; font-weight:900; letter-spacing:.12em; color:var(--accent); line-height:1; min-height:1em; }
+.tv #qr img { width:34vmin; height:34vmin; border-radius:2vmin; background:#fff; margin-top:2vmin; image-rendering:pixelated; }
+.tv #join-link { color:var(--dim); font-size:2vmin; word-break:break-all; }
+.tv #players { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:1.4vmin; }
+.tv #players li { background:var(--card); border-radius:1.6vmin; padding:1.6vmin 2vmin; font-size:3vmin; display:flex; justify-content:space-between; gap:1vmin; overflow:hidden; }
+.tv #players li .name { overflow-wrap:anywhere; }
+.tv #players li.leader { outline:.4vmin solid var(--accent); }
+.tv #players li.offline { opacity:.45; }
+.tv #players li .mark { color:var(--accent); font-size:2vmin; white-space:nowrap; }
+.tv.in-game #lobby { display:none; }
+.tv #game { grid-column:1 / -1; }
+/* Phone */
+.phone { max-width:480px; margin:0 auto; padding:5vw 16px; }
+.phone h1 { font-size:1.4rem; }
+.phone label { display:block; margin:.8em 0 .3em; color:var(--dim); }
+.phone #status { color:var(--ok); font-weight:700; }
+.phone #status.waiting { color:var(--accent); }
+.phone .row { display:flex; gap:.6em; flex-wrap:wrap; margin:.8em 0; }
+.phone #players-list { padding-left:1.2em; color:var(--dim); }
+.phone #picker button { display:block; width:100%; margin:.4em 0; text-align:left; }

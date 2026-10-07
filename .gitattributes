@@ -1,0 +1,2 @@
+# One import line per game. Union merge keeps lines added on both branches.
+games/*.registry.ts merge=union
