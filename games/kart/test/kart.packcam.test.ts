@@ -172,7 +172,7 @@ test(`staggered 10-bot run, ${LAPS} laps: pack camera keeps the pack in frame, s
     const seen = lapsSeen[r.kart];
     assert.deepEqual([...seen].sort((a, b) => a - b), seen, `${r.name}: lap counter never went backwards (${seen.join('>')})`);
   }
-  assert.ok(st.moved.some((m) => m.kart === 9), 'the stuck kart was moved');
+  assert.ok(st.moved.some((m: { kart: number }) => m.kart === 9), 'the stuck kart was moved');
   log('PASS');
   await ctx.close();
 });
